@@ -1,3 +1,4 @@
+-- this is a test
 create table usuario
 (
     id            bigint not null,
