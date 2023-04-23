@@ -1,4 +1,5 @@
--- this is a test
+-- DDL v0.0.1
+
 create table usuario
 (
     id            bigint not null,
