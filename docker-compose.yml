@@ -1,0 +1,54 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: ./src
+      target: production
+      dockerfile: Dockerfile
+    volumes:
+      - ./src:/src
+      - /src/node_modules
+    env_file:
+      - ./src/.env
+    networks:
+      - postgres_bridge
+    depends_on:
+      - postgres
+    profiles:
+      - prod
+
+  app-dev:
+    build:
+      context: ./src
+      target: development
+      dockerfile: Dockerfile
+    ports:
+      - 4000:3000
+    volumes:
+      - ./src:/src
+      - /src/node_modules
+    env_file:
+      - ./src/.env
+    networks:
+      - postgres_bridge
+    depends_on:
+      - postgres
+    profiles:
+      - dev
+
+  postgres:
+    image: postgres
+    env_file:
+      - ./src/dbs/.env
+    volumes:
+      - ./src/dbs/postgres/schema:/docker-entrypoint-initdb.d/
+    networks:
+      - postgres_bridge
+    profiles:
+      - prod
+      - dev
+
+networks:
+  postgres_bridge:
+    driver: bridge
