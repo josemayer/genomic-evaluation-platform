@@ -1,0 +1,26 @@
+{
+  "name": "genomic-evaluation-platform",
+  "version": "1.0.0",
+  "description": "Personalized genomics platform that provides users with information about their family history, genetic conditions and health risks based on their DNA sequences.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/josemayer/genomic-evaluation-platform.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/josemayer/genomic-evaluation-platform/issues"
+  },
+  "homepage": "https://github.com/josemayer/genomic-evaluation-platform#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "pg": "^8.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
