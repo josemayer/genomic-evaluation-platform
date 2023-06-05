@@ -40,7 +40,7 @@ services:
   postgres:
     image: postgres
     env_file:
-      - ./src/dbs/.env
+      - ./src/dbs/postgres/.env
     volumes:
       - ./src/dbs/postgres/schema:/docker-entrypoint-initdb.d/
     networks:
