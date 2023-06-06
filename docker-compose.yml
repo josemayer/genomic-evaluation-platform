@@ -13,8 +13,10 @@ services:
       - ./src/.env
     networks:
       - postgres_bridge
+      - neo4j_bridge
     depends_on:
       - postgres
+      - neo4j
     profiles:
       - prod
 
@@ -49,6 +51,19 @@ services:
       - prod
       - dev
 
+  neo4j:
+    image: neo4j
+    env_file:
+      - ./src/dbs/neo4j/.env
+    networks:
+      - neo4j_bridge
+    profiles:
+      - prod
+      - dev
+
 networks:
   postgres_bridge:
     driver: bridge
+  neo4j_bridge:
+    driver: bridge
+
