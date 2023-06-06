@@ -61,9 +61,24 @@ services:
       - prod
       - dev
 
+  redis:
+    build:
+      context: ./src/dbs/redis
+      dockerfile: Dockerfile
+    env_file:
+      - ./src/dbs/redis/.env
+    volumes:
+      - ./src/dbs/redis/log:/var/db/redis/log
+    networks:
+      - redis_bridge
+    profiles:
+      - prod
+      - dev
+
 networks:
   postgres_bridge:
     driver: bridge
   neo4j_bridge:
     driver: bridge
-
+  redis_bridge:
+    driver: bridge

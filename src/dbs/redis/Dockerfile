@@ -1,0 +1,6 @@
+FROM redis:latest
+
+RUN mkdir -p /var/db/redis/store /var/db/redis/log
+COPY ./conf/redis.conf /etc/redis/redis.conf
+
+CMD redis-server /etc/redis/redis.conf --requirepass ${REDIS_PASSWORD}
