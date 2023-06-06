@@ -27,6 +27,12 @@ To run the application in production mode with Docker Compose or NPM, execute:
 
 **NOTE:** Both development and production modes, with NPM, require you pass the environment variables of `/src/env` to NodeJS. Docker Compose does that automatically.
 
+## Running tests
+
+To run tests of this application, you need to be in development mode. You can use either NPM or Docker:
+  - `$ docker compose exec app-dev npm test`
+  - `$ npm [run] test`
+
 ## TO-DOs:
 
 - [ ] Add automated tests package
