@@ -28,8 +28,8 @@ To run the application in production mode with Docker Compose or NPM, execute:
 
 ## TO-DOs:
 
-- Add automated tests package
-- Add other NoSQL database containers and networks (and theirs respective packages, configs and environment variables)
-- Create schema to relational model of database
-- Create schemas to NoSQL models of databases
-- Create functions and procedures that will fit application into requirements
+- [ ] Add automated tests package
+- [x] Add other NoSQL database containers and networks (and theirs respective packages, configs and environment variables)
+- [ ] Create schema to relational model of database
+- [ ] Create schemas to NoSQL models of databases
+- [ ] Create functions and procedures that will fit application into requirements
