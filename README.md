@@ -35,8 +35,9 @@ To run tests of this application, you need to be in development mode. You can us
 
 ## TO-DOs:
 
-- [ ] Add automated tests package
+- [x] Add automated tests package
 - [x] Add other NoSQL database containers and networks (and theirs respective packages, configs and environment variables)
+- [ ] Add CI to run tests in pull-requests and merge events
 - [ ] Create schema to relational model of database
 - [ ] Create schemas to NoSQL models of databases
 - [ ] Create functions and procedures that will fit application into requirements
