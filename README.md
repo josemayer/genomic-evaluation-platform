@@ -6,7 +6,8 @@ Personalized genomics platform that provides users with information about their 
 To run this application, you must:
 
 1. Clone this repository
-2. Create both `.env` files from `/src/.env.sample` and `/src/dbs/postgres/.env.sample` in the same directories
+2. Create `.env` file from `/src/.env.sample` in the same directory
+3. Create all `.env` files from `/src/dbs/{postgres, neo4j, redis}/.env.sample` in the same directories
 
 Then you can start it in two modes — development or production.
 
