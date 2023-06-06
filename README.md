@@ -33,3 +33,4 @@ To run the application in production mode with Docker Compose or NPM, execute:
 - [ ] Create schema to relational model of database
 - [ ] Create schemas to NoSQL models of databases
 - [ ] Create functions and procedures that will fit application into requirements
+- [ ] Add data persistance to all databases (in second phase, after development)
