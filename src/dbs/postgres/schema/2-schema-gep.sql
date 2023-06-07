@@ -40,6 +40,13 @@ create table medico
     primary key (usuario_id)
 );
 
+create table tipo_painel
+(
+    id        bigint,
+    descricao text,
+
+    primary key (id)
+);
 
 create table coleta
 (
@@ -53,28 +60,28 @@ create table coleta
     foreign key (tipo_painel_id) references tipo_painel (id)
 );
 
-create table tipo_painel
-(
-    id        bigint,
-    descricao text,
 
+create table exame
+(
+    id               bigint,
+    coleta_id        bigint               not null,
+    tempo_estimado   interval             not null,
+
+    foreign key (coleta_id) references coleta (id),
     primary key (id)
 );
 
 create type estado_do_exame_tipo as enum ('na fila', 'processando', 'completo', 'invalido');
 
-create table exame
-(
-    id               bigint,
-    painel_id        bigint               not null,
-    cliente_id       bigint               not null,
-    coleta_id        bigint               not null,
-    tempo_estimado   interval             not null,
+create table andamento_exame (
+  usuario_id bigint not null,
+  exame_id bigint not null,
+  data timestamp not null,
+  estado_do_exame estado_do_exame_tipo not null,
 
-    foreign key (painel_id) references painel (id),
-    foreign key (cliente_id) references cliente (usuario_id),
-    foreign key (coleta_id) references coleta (id),
-    primary key (id)
+  foreign key (usuario_id) references usuario (id),
+  foreign key (exame_id) references exame (id),
+  primary key (usuario_id, exame_id)
 );
 
 create table painel
@@ -93,11 +100,9 @@ create table condicao
     id            bigint not null,
     descricao     text   not null,
     nome          text   not null,
-    condicao_id  bigint not null,
     prob_pop      float  not null,
 
-    primary key (id),
-    foreign key (condicao_id) references condicao (id)
+    primary key (id)
 );
 
 --- attr multivalorado de condicao
@@ -114,10 +119,11 @@ create table condicao_sequencia_dna
 
 create table identifica_condicao
 (
-    tipo_painel_id bigint not null,
     exame_id bigint not null,
+    tipo_painel_id bigint not null,
+    condicao_id bigint not null,
 
-    foreign key (exame_id, tipo_painel_id) references exame (exame_id, tipo_painel_id),
+    foreign key (exame_id, tipo_painel_id) references painel (exame_id, tipo_painel_id),
     foreign key (condicao_id) references condicao (id),
     primary key (exame_id, tipo_painel_id, condicao_id)
 );
@@ -132,8 +138,3 @@ create table notificacao
     foreign key (usuario_id) references usuario (id),
     primary key (id)
 );
-
-
---- ===========
-
-
