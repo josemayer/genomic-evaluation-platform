@@ -114,7 +114,7 @@ CREATE TABLE andamento_exame (
     REFERENCES usuario (id),
   CONSTRAINT andamento_exame_exame_fk FOREIGN KEY (exame_id)
     REFERENCES exame (id),
-  CONSTRAINT andamento_exame_pk PRIMARY KEY (usuario_id, exame_id)
+  CONSTRAINT andamento_exame_pk PRIMARY KEY (usuario_id, exame_id, data)
 );
 
 CREATE TABLE painel (
