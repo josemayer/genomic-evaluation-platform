@@ -53,6 +53,16 @@ describe("helloWorld", () => {
   });
 
   describe("with failing", () => {
+    it("should not return hello world", () => {
+      const req = new MockRequest({});
+      const res = new MockResponse();
+      const exp = new MockResponse(200, { message: 'Hello, foo!' });
+
+      helloWorld.sayHello(req, res, null);
+
+      expect(res.getResponse()).not.toEqual(exp.getResponse());
+    });
+
     it("should not return hello world with name", () => {
       const req = new MockRequest({ name: 'Baker' });
       const res = new MockResponse();
