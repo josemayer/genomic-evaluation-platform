@@ -4,13 +4,9 @@ on:
   pull_request:
     branches:
       - '*'
-    paths:
-      - src/**
   push:
     branches:
-      - main
-    paths:
-      - src/** 
+      - main 
 
 jobs:
   test:
