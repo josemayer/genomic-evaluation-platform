@@ -1,32 +1,66 @@
 const helloWorld = require('../../../app/controllers/helloWorld');
 
-const mockRequest = (params) => {
-  const req = {};
-  req.params = params;
-  return req
-};
+class MockRequest {
+  constructor(params) {
+    this.params = params;
+  }
+}
 
-const mockResponse = (status_code, message) => {
-  const res = {};
-  res.status = jest.fn().mockReturnValue(status_code);
-  res.json = jest.fn().mockReturnValue({ message: message });
-  return res;
-};
+class MockResponse {
+  constructor(status_code, json) {
+    this.data = {
+      status: status_code,
+      json: json,
+    };
+  }
+
+  status(status_code) {
+    this.data.status = status_code;
+    return status_code;
+  }
+
+  json(json_rec) {
+    this.data.json = json_rec;
+    return json_rec;
+  }
+
+  getResponse() {
+    return this.data;
+  }
+}
 
 describe("helloWorld", () => {
   describe("with passing", () => {
     it("should return hello world", () => {
-      const req = mockRequest({});
-      const res = mockResponse(200, 'Hello, World!');
+      const req = new MockRequest({});
+      const res = new MockResponse();
+      const exp = new MockResponse(200, { message: 'Hello, World!' });
 
-      expect(helloWorld.sayHello(req, res, null)).toEqual(res);
+      helloWorld.sayHello(req, res, null);
+
+      expect(res.getResponse()).toEqual(exp.getResponse());
     });
 
     it("should return hello world with name", () => {
-      const req = mockRequest({ name: 'Baker' });
-      const res = mockResponse(200, 'Hello, Baker!');
+      const req = new MockRequest({ name: 'Baker' });
+      const res = new MockResponse();
+      const exp = new MockResponse(200, { message: 'Hello, Baker!' });
 
-      expect(helloWorld.sayHelloWithName(req, res, null)).toEqual(res);
+      helloWorld.sayHelloWithName(req, res, null);
+
+      expect(res.getResponse()).toEqual(exp.getResponse());
+    });
+  });
+
+  describe("with failing", () => {
+    it("should not return hello world with name", () => {
+      const req = new MockRequest({ name: 'Baker' });
+      const res = new MockResponse();
+      const exp = new MockResponse(200, { message: 'Hello, World!' });
+
+      helloWorld.sayHelloWithName(req, res, null);
+
+      expect(res.getResponse()).not.toEqual(exp.getResponse());
     });
   });
 });
