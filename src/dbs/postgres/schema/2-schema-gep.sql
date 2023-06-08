@@ -1,139 +1,162 @@
--- DDL v0.0.1
+DROP TABLE IF EXISTS usuario CASCADE;
+DROP TABLE IF EXISTS administrador CASCADE;
+DROP TABLE IF EXISTS laborista CASCADE;
+DROP TABLE IF EXISTS cliente CASCADE;
+DROP TABLE IF EXISTS medico CASCADE;
+DROP TABLE IF EXISTS tipo_painel CASCADE;
+DROP TABLE IF EXISTS coleta CASCADE;
+DROP TABLE IF EXISTS exame CASCADE;
+DROP TYPE IF EXISTS TIPO_DE_ESTADO_DO_EXAME CASCADE;
+DROP TABLE IF EXISTS andamento_exame CASCADE;
+DROP TABLE IF EXISTS painel CASCADE;
+DROP TABLE IF EXISTS condicao CASCADE;
+DROP TABLE IF EXISTS condicao_sequencia_dna CASCADE;
+DROP TABLE IF EXISTS identifica_condicao CASCADE;
+DROP TABLE IF EXISTS notificacao CASCADE;
 
-create table usuario
-(
-    id            bigint not null,
-    nome_completo text   not null,
-    email         text   not null,
-    senha         text   not null,
-    primary key (id)
+CREATE TABLE usuario (
+  id            BIGINT,
+  nome_completo TEXT    NOT NULL,
+  email         TEXT    NOT NULL,
+  senha         TEXT    NOT NULL,
+
+  CONSTRAINT usuario_pk PRIMARY KEY (id)
 );
 
-create table administrador
-(
-    usuario_id bigint,
-    foreign key (usuario_id) references usuario (id),
-    primary key (usuario_id)
+CREATE TABLE administrador (
+    usuario_id    BIGINT NOT NULL,
+
+    CONSTRAINT admin_usuario_fk FOREIGN KEY (usuario_id)
+      REFERENCES usuario (id),
+    CONSTRAINT admin_pk PRIMARY KEY (usuario_id)
 );
 
-create table laborista
-(
-    usuario_id bigint,
-    numero_identificacao bigint,
-    foreign key (usuario_id) references usuario (id),
-    primary key (usuario_id)
+CREATE TABLE laborista (
+    usuario_id            BIGINT NOT NULL,
+    numero_identificacao  BIGINT,
+
+    CONSTRAINT laborista_usuario_fk FOREIGN KEY (usuario_id)
+      REFERENCES usuario (id),
+    CONSTRAINT laborista_pk PRIMARY KEY (usuario_id)
 );
 
-create table cliente
-(
-    usuario_id bigint,
-    telefone varchar(20),
-    foreign key (usuario_id) references usuario (id),
-    primary key (usuario_id)
+CREATE TABLE cliente (
+    usuario_id  BIGINT NOT NULL,
+    telefone    VARCHAR(20),
+
+    CONSTRAINT cliente_usuario_fk FOREIGN KEY (usuario_id)
+      REFERENCES usuario (id),
+    CONSTRAINT cliente_pk PRIMARY KEY (usuario_id)
 );
 
-create table medico
-(
-    usuario_id bigint,
-    registro_crm bigint,
-    foreign key (usuario_id) references usuario (id),
-    primary key (usuario_id)
+CREATE TABLE medico (
+    usuario_id    BIGINT NOT NULL,
+    registro_crm  BIGINT,
+
+    CONSTRAINT medico_usuario_fk FOREIGN KEY (usuario_id)
+      REFERENCES usuario (id),
+    CONSTRAINT medico_pk PRIMARY KEY (usuario_id)
 );
 
+CREATE TABLE notificacao (
+    id          BIGINT,
+    usuario_id  BIGINT    NOT NULL,
+    data        TIMESTAMP NOT NULL,
+    visualizado BOOL      DEFAULT false,
+    texto       TEXT      NOT NULL,
 
-create table coleta
-(
-    id bigint,
-    cliente_id bigint not null,
-    tipo_painel_id bigint not null,
-    data timestamp not null,
-
-    primary key (id),
-    foreign key (cliente_id) references cliente (usuario_id),
-    foreign key (tipo_painel_id) references tipo_painel (id)
+    CONSTRAINT notificacao_usuario_fk FOREIGN KEY (usuario_id)
+      REFERENCES usuario (id),
+    CONSTRAINT notificacao_pk PRIMARY KEY (id)
 );
 
-create table tipo_painel
-(
-    id        bigint,
-    descricao text,
+CREATE TABLE tipo_painel (
+    id        BIGINT,
+    descricao TEXT,
 
-    primary key (id)
+    CONSTRAINT tipo_painel_pk PRIMARY KEY (id)
 );
 
-create type estado_do_exame_tipo as enum ('na fila', 'processando', 'completo', 'invalido');
+CREATE TABLE coleta (
+    id              BIGINT,
+    cliente_id      BIGINT    NOT NULL,
+    tipo_painel_id  BIGINT    NOT NULL,
+    data            TIMESTAMP NOT NULL,
 
-create table exame
-(
-    id               bigint,
-    painel_id        bigint               not null,
-    cliente_id       bigint               not null,
-    coleta_id        bigint               not null,
-    tempo_estimado   interval             not null,
-
-    foreign key (painel_id) references painel (id),
-    foreign key (cliente_id) references cliente (usuario_id),
-    foreign key (coleta_id) references coleta (id),
-    primary key (id)
-);
-
-create table painel
-(
-    exame_id bigint not null,
-    tipo_painel_id               bigint not null,
-    sequencia_de_codigo_genetico text   not null,
-    foreign key (exame_id) references exame (id),
-    foreign key (tipo_painel_id) references tipo_painel (id),
-    primary key (exame_id, tipo_painel_id)
-);
-
-
-create table condicao
-(
-    id            bigint not null,
-    descricao     text   not null,
-    nome          text   not null,
-    condicao_id  bigint not null,
-    prob_pop      float  not null,
-
-    primary key (id),
-    foreign key (condicao_id) references condicao (id)
-);
-
---- attr multivalorado de condicao
-create table condicao_sequencia_dna
-(
-    condicao_id bigint not null,
-    sequencia_dna text not null,
-    prob_seq float not null,
-    prob_seq_dado_cond float not null,
-
-    foreign key (condicao_id) references condicao (id),
-    primary key (condicao_id, sequencia_dna)
-);
-
-create table identifica_condicao
-(
-    tipo_painel_id bigint not null,
-    exame_id bigint not null,
-
-    foreign key (exame_id, tipo_painel_id) references exame (exame_id, tipo_painel_id),
-    foreign key (condicao_id) references condicao (id),
-    primary key (exame_id, tipo_painel_id, condicao_id)
-);
-
-create table notificacao
-(
-    id          bigint not null,
-    usuario_id  bigint not null,
-    data        date   not null,
-    visualizado bool default false,
-    texto       text   not null,
-    foreign key (usuario_id) references usuario (id),
-    primary key (id)
+    CONSTRAINT coleta_cliente_fk FOREIGN KEY (cliente_id)
+      REFERENCES cliente (usuario_id),
+    CONSTRAINT coleta_tipo_painel_fk FOREIGN KEY (tipo_painel_id)
+      REFERENCES tipo_painel (id),
+    CONSTRAINT coleta_pk PRIMARY KEY (id)
 );
 
 
---- ===========
+CREATE TABLE exame (
+    id              BIGINT,
+    coleta_id       BIGINT    NOT NULL,
+    tempo_estimado  INTERVAL  NOT NULL,
 
+    CONSTRAINT exame_coleta_fk FOREIGN KEY (coleta_id)
+      REFERENCES coleta (id),
+    CONSTRAINT exame_pk PRIMARY KEY (id)
+);
 
+CREATE TYPE TIPO_DE_ESTADO_DO_EXAME
+  AS ENUM('na fila', 'processando', 'completo', 'inválido', 'autorizado', 'cancelado');
+
+CREATE TABLE andamento_exame (
+  usuario_id      BIGINT,
+  exame_id        BIGINT,
+  data            TIMESTAMP               NOT NULL,
+  estado_do_exame TIPO_DE_ESTADO_DO_EXAME NOT NULL,
+
+  CONSTRAINT andamento_exame_usuario_fk FOREIGN KEY (usuario_id)
+    REFERENCES usuario (id),
+  CONSTRAINT andamento_exame_exame_fk FOREIGN KEY (exame_id)
+    REFERENCES exame (id),
+  CONSTRAINT andamento_exame_pk PRIMARY KEY (usuario_id, exame_id, data)
+);
+
+CREATE TABLE painel (
+    exame_id                      BIGINT,
+    tipo_painel_id                BIGINT,
+    sequencia_de_codigo_genetico  TEXT    NOT NULL,
+
+    CONSTRAINT painel_exame_fk FOREIGN KEY (exame_id)
+      REFERENCES exame (id),
+    CONSTRAINT painel_tipo_painel_fk FOREIGN KEY (tipo_painel_id)
+      REFERENCES tipo_painel (id),
+    CONSTRAINT painel_pk PRIMARY KEY (exame_id, tipo_painel_id)
+);
+
+CREATE TABLE condicao (
+    id              BIGINT,
+    descricao       TEXT    NOT NULL,
+    nome            TEXT    NOT NULL,
+    prob_populacao  FLOAT   NOT NULL,
+
+    CONSTRAINT condicao_pk PRIMARY KEY (id)
+);
+
+CREATE TABLE condicao_sequencia_dna (
+    condicao_id         BIGINT,
+    sequencia_dna       TEXT,
+    prob_seq            FLOAT   NOT NULL,
+    prob_seq_dado_cond  FLOAT   NOT NULL,
+
+    CONSTRAINT condicao_sequencia_dna_condicao_fk FOREIGN KEY (condicao_id)
+      REFERENCES condicao (id),
+    CONSTRAINT condicao_sequencia_dna_pk PRIMARY KEY (condicao_id, sequencia_dna)
+);
+
+CREATE TABLE identifica_condicao (
+    exame_id        BIGINT,
+    tipo_painel_id  BIGINT,
+    condicao_id     BIGINT,
+
+    CONSTRAINT identifica_condicao_painel_fk FOREIGN KEY (exame_id, tipo_painel_id)
+      REFERENCES painel (exame_id, tipo_painel_id),
+    CONSTRAINT identifica_condicao_condicao_fk FOREIGN KEY (condicao_id)
+      REFERENCES condicao (id),
+    CONSTRAINT identifica_conexao_pk PRIMARY KEY (exame_id, tipo_painel_id, condicao_id)
+);
