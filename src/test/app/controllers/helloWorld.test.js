@@ -1,6 +1,6 @@
 const helloWorld = require('../../../app/controllers/helloWorld');
 
-describe("helloWorld", () => {
+describe("helloWorld controller", () => {
   let mockRequest;
   let mockResponse;
   let mockNext;
@@ -15,40 +15,48 @@ describe("helloWorld", () => {
   });
 
   describe("with passing", () => {
-    it("should return hello world", () => {
-      helloWorld.sayHello(mockRequest, mockResponse, mockNext);
+    describe("sayHello", () => {
+      it("should return hello world", () => {
+        helloWorld.sayHello(mockRequest, mockResponse, mockNext);
 
-      expect(mockResponse.status).toHaveBeenCalledWith(200);
-      expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Hello, World!' });
-      expect(mockNext).not.toHaveBeenCalled();
+        expect(mockResponse.status).toHaveBeenCalledWith(200);
+        expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Hello, World!' });
+        expect(mockNext).not.toHaveBeenCalled();
+      });
     });
 
-    it("should return hello world with name", () => {
-      mockRequest.params = { name: 'Baker' };
+    describe("sayHelloWithName", () => {
+      it("should return hello world with name", () => {
+        mockRequest.params = { name: 'Baker' };
 
-      helloWorld.sayHelloWithName(mockRequest, mockResponse, mockNext);
+        helloWorld.sayHelloWithName(mockRequest, mockResponse, mockNext);
 
-      expect(mockResponse.status).toHaveBeenCalledWith(200);
-      expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Hello, Baker!' });
-      expect(mockNext).not.toHaveBeenCalled();
+        expect(mockResponse.status).toHaveBeenCalledWith(200);
+        expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Hello, Baker!' });
+        expect(mockNext).not.toHaveBeenCalled();
+      });
     });
   });
 
   describe("with failing", () => {
-    it("should not return hello world", () => {
-      helloWorld.sayHello(mockRequest, mockResponse, mockNext);
+    describe("sayHello", () => {
+      it("should not return hello world", () => {
+        helloWorld.sayHello(mockRequest, mockResponse, mockNext);
 
-      expect(mockResponse.status).toHaveBeenCalledWith(200);
-      expect(mockResponse.json).not.toHaveBeenCalledWith({ message: 'Hello, foo!' });
+        expect(mockResponse.status).toHaveBeenCalledWith(200);
+        expect(mockResponse.json).not.toHaveBeenCalledWith({ message: 'Hello, foo!' });
+      });
     });
 
-    it("should not return hello world with name", () => {
-      mockRequest.params = { name: 'Baker' };
+    describe("sayHelloWithName", () => {
+      it("should not return hello world with name", () => {
+        mockRequest.params = { name: 'Baker' };
 
-      helloWorld.sayHelloWithName(mockRequest, mockResponse, mockNext);
+        helloWorld.sayHelloWithName(mockRequest, mockResponse, mockNext);
 
-      expect(mockResponse.status).toHaveBeenCalledWith(200);
-      expect(mockResponse.json).not.toHaveBeenCalledWith({ message: 'Hello, World!' });
+        expect(mockResponse.status).toHaveBeenCalledWith(200);
+        expect(mockResponse.json).not.toHaveBeenCalledWith({ message: 'Hello, World!' });
+      });
     });
   });
 });
