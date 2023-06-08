@@ -36,8 +36,10 @@ services:
       - ./src/.env
     networks:
       - postgres_bridge
+      - neo4j_bridge
     depends_on:
       - postgres
+      - neo4j
     profiles:
       - dev
 
