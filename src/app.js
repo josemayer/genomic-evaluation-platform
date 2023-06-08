@@ -3,11 +3,13 @@ const env = require('./app/config/env');
 
 const indexRoute = require('./app/routes/index');
 const helloWorldRoute = require('./app/routes/helloWorld');
+const redisRoute = require('./app/routes/redis');
 
 const app = express();
 
 app.use('/', indexRoute);
 app.use('/helloWorld', helloWorldRoute);
+app.use('/redis', redisRoute);
 
 const network = env.network;
 const appInfo = env.app;

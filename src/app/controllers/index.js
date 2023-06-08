@@ -22,6 +22,16 @@ function showRoutes(req, res, next) {
         path: '/helloWorld/postgres',
         description: 'Returns a simple hello-world message with the names retrieved from a Postgres database.',
       },
+      {
+        method: 'GET',
+        path: '/redis/get/{key}',
+        description: 'Returns the value of the given key from redis'
+      },
+      {
+        method: 'GET',
+        path: '/redis/set/{key}/{value}',
+        description: 'Sets the value of the key on redis'
+      },
     ],
   });
 }

@@ -17,6 +17,11 @@ const environment = {
       password: env.POSTGRES_PASSWORD || 'postgres',
       database: env.POSTGRES_DB || 'postgres',
     },
+    redis: {
+      // NOTE(luatil): Format `redis[s]://[[username][:password]@][host][:port][/db-number]`
+      // NOTE(luatil): env.REDIS_HOST should be the the name of the container, as defined in the .yml file.
+      url: `redis://${env.REDIS_USERNAME || 'default'}:${env.REDIS_PASSWORD || ''}@${env.REDIS_HOST || 'redis'}:${env.REDIS_PORT || '6379'}`
+    }
   },
 };
 

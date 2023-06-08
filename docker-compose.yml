@@ -34,8 +34,10 @@ services:
       - /src/node_modules
     env_file:
       - ./src/.env
+      - ./src/dbs/redis/.env
     networks:
       - postgres_bridge
+      - redis_bridge
     depends_on:
       - postgres
     profiles:
