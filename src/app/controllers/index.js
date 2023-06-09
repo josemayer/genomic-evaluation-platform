@@ -22,6 +22,11 @@ function showRoutes(req, res, next) {
         path: '/helloWorld/postgres',
         description: 'Returns a simple hello-world message with the names retrieved from a Postgres database.',
       },
+      {
+        method: 'GET',
+        path: '/users/clients',
+        description: 'Returns a list of clients from the database.',
+      },
     ],
   });
 }
