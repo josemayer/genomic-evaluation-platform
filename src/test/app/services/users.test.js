@@ -90,6 +90,43 @@ describe('users service', () => {
         );
       });
     });
+
+    describe('insertClient', () => {
+      it('should insert a new client into the database and return the inserted client', async () => {
+        const clientData = {
+          nome_completo: 'Alice',
+          email: 'alice@example.com',
+          telefone: '(11) 77777-7777'
+        };
+        const userId = 1;
+
+        const userInsertResult = { rows: [{ id: userId }] };
+        pg.query.mockResolvedValueOnce(userInsertResult);
+
+        const clientInsertResult = { rowCount: 1 };
+        pg.query.mockResolvedValueOnce(clientInsertResult);
+
+        const expectedResult = {
+          id: userId,
+          name: clientData.nome_completo,
+          email: clientData.email,
+          phone: clientData.telefone,
+        };
+
+        const result = await users.insertClient(clientData);
+
+        expect(result).toEqual(expectedResult);
+        expect(pg.query).toHaveBeenCalledTimes(2);
+        expect(pg.query).toHaveBeenCalledWith(
+          'INSERT INTO usuario (nome_completo, email) VALUES ($1, $2) RETURNING id',
+          [clientData.nome_completo, clientData.email]
+        );
+        expect(pg.query).toHaveBeenCalledWith(
+          'INSERT INTO cliente (usuario_id, telefone) VALUES ($1, $2)',
+          [userId, clientData.telefone]
+        );
+      });
+    });
   });
 
   describe('with failing', () => {
@@ -112,6 +149,51 @@ describe('users service', () => {
         expect(pg.query).toHaveBeenCalledWith(
           "SELECT u.id, u.nome_completo, u.email, c.telefone FROM usuario AS u, cliente AS c WHERE u.id = c.usuario_id AND u.id = $1",
           [1]
+        );
+      });
+    });
+
+    describe('insertClient', () => {
+      it('should throw an error if the user insertion query fails', async () => {
+        const clientData = {
+          nome_completo: 'Alice',
+          email: 'alice@example.com',
+          telefone: '(11) 77777-7777'
+        };
+        const dbError = new Error('DB Error');
+        pg.query.mockRejectedValueOnce(dbError);
+
+        await expect(users.insertClient(clientData)).rejects.toThrow('DB Error');
+        expect(pg.query).toHaveBeenCalledTimes(1);
+        expect(pg.query).toHaveBeenCalledWith(
+          'INSERT INTO usuario (nome_completo, email) VALUES ($1, $2) RETURNING id',
+          [clientData.nome_completo, clientData.email]
+        );
+      });
+
+      it('should throw an error if the client insertion query fails', async () => {
+        const clientData = {
+          nome_completo: 'Alice',
+          email: 'alice@example.com',
+          telefone: '(11) 77777-7777'
+        };
+        const userId = 1;
+
+        const userInsertResult = { rows: [{ id: userId }] };
+        pg.query.mockResolvedValueOnce(userInsertResult);
+
+        const dbError = new Error('DB Error');
+        pg.query.mockRejectedValueOnce(dbError);
+
+        await expect(users.insertClient(clientData)).rejects.toThrow('DB Error');
+        expect(pg.query).toHaveBeenCalledTimes(2);
+        expect(pg.query).toHaveBeenCalledWith(
+          'INSERT INTO usuario (nome_completo, email) VALUES ($1, $2) RETURNING id',
+          [clientData.nome_completo, clientData.email]
+        );
+        expect(pg.query).toHaveBeenCalledWith(
+          'INSERT INTO cliente (usuario_id, telefone) VALUES ($1, $2)',
+          [userId, clientData.telefone]
         );
       });
     });
