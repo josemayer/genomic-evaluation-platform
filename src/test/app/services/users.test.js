@@ -103,5 +103,17 @@ describe('users service', () => {
         );
       });
     });
+
+    describe('getClientById', () => {
+      it('should return an error', async () => {
+        pg.query.mockRejectedValue(new Error('DB Error'));
+
+        await expect(users.getClientById(1)).rejects.toThrow('DB Error');
+        expect(pg.query).toHaveBeenCalledWith(
+          "SELECT u.id, u.nome_completo, u.email, c.telefone FROM usuario AS u, cliente AS c WHERE u.id = c.usuario_id AND u.id = $1",
+          [1]
+        );
+      });
+    });
   });
 });
