@@ -53,10 +53,15 @@ describe("redis controller", () => {
     describe("helloWorld", () => {
       it("should a list of the greatest names", async () => {
 
+        const mockHelloWorldResult = ["Luã","Max","Zé"]; // ALPHABETICAL ORDER 
+        const expectedResult = { message: mockHelloWorldResult };
+
+        redisService.helloWorld.mockResolvedValue(mockHelloWorldResult);
+
         await redis.helloWorldFromRedis(mockRequest, mockResponse, mockNext);
 
         expect(mockResponse.status).toHaveBeenCalledWith(200);
-        expect(mockResponse.json).toHaveBeenCalledWith({"message": ["Luã","Max","Zé"]});
+        expect(mockResponse.json).toHaveBeenCalledWith(expectedResult);
         expect(mockNext).not.toHaveBeenCalled();
       });
     });
