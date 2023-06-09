@@ -71,6 +71,60 @@ describe("users controller", () => {
         expect(mockResponse.json).toHaveBeenCalledWith(expectedResult);
       });
     });
+
+    describe("getClientById", () => {
+      it.each([
+        [
+          {
+            name: 'Testovich',
+            mail: 'testovich@exemplo.com',
+            phone: '(11) 4002-8922',
+          },
+          {
+            client: {
+              name: 'Testovich',
+              mail: 'testovich@exemplo.com',
+              phone: '(11) 4002-8922',
+            },
+            meta: {
+              total: 1
+            }
+          }
+        ],
+        [
+          [
+            {
+              name: 'Testt Auttovich',
+              mail: 'test-aut@exemplo.com',
+              phone: '(11) 4002-8922'
+            },
+            {
+              name: 'Ott Testt',
+              mail: 'anottestt@exemplo.com',
+              phone: '(11) 0000-0000'
+            }
+          ],
+          {
+            client: {
+              name: 'Testt Auttovich',
+              mail: 'test-aut@exemplo.com',
+              phone: '(11) 4002-8922'
+            },
+            meta: {
+              total: 1,
+            }
+          }
+        ]
+      ])("should return the client data from getClientById", async (getClientByIdResult, expectedResult) => {
+        usersService.getClientById.mockResolvedValue(getClientByIdResult);
+
+        const mockRequest = { params: { id: 1 } };
+        await users.clientInfo(mockRequest, mockResponse, mockNext);
+
+        expect(mockResponse.status).toHaveBeenCalledWith(200);
+        expect(mockResponse.json).toHaveBeenCalledWith(expectedResult);
+      });
+    });
   });
 
   describe("with failing", () => {
@@ -84,6 +138,30 @@ describe("users controller", () => {
 
         expect(mockResponse.status).toHaveBeenCalledWith(error.statusCode);
         expect(mockResponse.json).toHaveBeenCalledWith({ message: error.message });
+      });
+    });
+
+    describe("getClientById", () => {
+      it("should return the required id error", async () => {
+        usersService.getClientById.mockResolvedValue(null);
+
+        const mockRequest = { params: {} };
+        await users.clientInfo(mockRequest, mockResponse, mockNext);
+
+        expect(mockResponse.status).toHaveBeenCalledWith(400);
+        expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Required id' });
+      });
+
+      it.each(
+        [null, undefined, [], {}]
+      )("should return the error to not found client", async (getClientByIdResult) => {
+        usersService.getClientById.mockResolvedValue(getClientByIdResult);
+
+        const mockRequest = { params: { id: 1 } };
+        await users.clientInfo(mockRequest, mockResponse, mockNext);
+
+        expect(mockResponse.status).toHaveBeenCalledWith(404);
+        expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Not found' });
       });
     });
   });
