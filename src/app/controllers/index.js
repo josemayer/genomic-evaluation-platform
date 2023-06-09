@@ -27,6 +27,11 @@ function showRoutes(req, res, next) {
         path: '/users/clients',
         description: 'Returns a list of clients from the database.',
       },
+      {
+        method: 'GET',
+        path: '/users/client/{id}',
+        description: 'Returns a client from the database by id.',
+      },
     ],
   });
 }
