@@ -7,6 +7,8 @@ const usersRoute = require('./app/routes/users');
 
 const app = express();
 
+app.use(express.json());
+
 app.use('/', indexRoute);
 app.use('/helloWorld', helloWorldRoute);
 app.use('/users', usersRoute);
