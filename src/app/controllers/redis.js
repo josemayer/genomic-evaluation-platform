@@ -1,5 +1,12 @@
 const redis = require('../services/redis');
 
+async function helloWorldFromRedis(req, res, next) {
+  res.status(200);
+  const redisResult = await redis.helloWorld();
+  res.json({ message: redisResult });
+  return res;
+}
+
 async function setKeyWithValue(req, res, next) {
   // NOTE(luatil): This should probably be a POST message
   const { key, value } = req.params;
@@ -17,7 +24,11 @@ async function getValue(req, res, next) {
   return res;
 }
 
+async function addUser(req, res, next) {
+}
+
 module.exports = {
   setKeyWithValue,
-  getValue
+  getValue,
+  helloWorldFromRedis
 }

@@ -38,5 +38,16 @@ describe("redis controller", () => {
         expect(mockNext).not.toHaveBeenCalled();
       });
     });
+
+    describe("helloWorld", () => {
+      it("should a list of the greatest names", async () => {
+
+        await redis.helloWorldFromRedis(mockRequest, mockResponse, mockNext);
+
+        expect(mockResponse.status).toHaveBeenCalledWith(200);
+        expect(mockResponse.json).toHaveBeenCalledWith({"message": ["Luã","Max","Zé"]});
+        expect(mockNext).not.toHaveBeenCalled();
+      });
+    });
   });
 })

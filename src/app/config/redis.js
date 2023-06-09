@@ -1,27 +1,51 @@
-const redis = require('redis');
+const { Client } = require('redis-om');
 const env = require('./env');
+const { helloWorldSchema } = require('../../dbs/redis/schema/1-helloWorld');
 
-const redis_env = env.dbs.redis;
+const url = env.dbs.redis.url;
 
-// NOTE(luatil):  Code based on https://www.npmjs.com/package/redis
-const client = redis.createClient(redis_env);
-client.on('error', err => console.log('Redis Client Error', err));
+async function helloWorld() {
+  const client = new Client()
+  await client.open(url);
+  const helloWorldRepositoy = client.fetchRepository(helloWorldSchema);
 
-// NOTE(luatil): Not sure if we should always create a new connection
+  await helloWorldRepositoy.createIndex();
+
+  await helloWorldRepositoy.createAndSave({
+    name: "Luã",
+  });
+  await helloWorldRepositoy.createAndSave({
+    name: "Zé",
+  });
+  await helloWorldRepositoy.createAndSave({
+    name: "Max",
+  });
+
+  /** @type {helloWorld[]} */
+  const all = await helloWorldRepositoy.search().all();
+
+  await client.close();
+
+  return all;
+}
+
 async function set(key, value) {
-  await client.connect();
+  const client = new Client()
+  await client.open(url);
   await client.set(key, value);
-  await client.disconnect();
+  await client.close();
 }
 
 async function get(key) {
-  await client.connect();
+  const client = new Client()
+  await client.open(url);
   const value = await client.get(key);
-  await client.disconnect();
+  await client.close();
   return value;
 }
 
 module.exports = {
   set,
-  get
+  get,
+  helloWorld
 };
