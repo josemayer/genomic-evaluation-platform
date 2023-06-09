@@ -6,6 +6,11 @@ function recordToObj(rec) {
 	for (var ind = 0; ind < rec.keys.length; ind++) {
 		let key = rec.keys[ind];
 		obj[key] = rec.get(key);
+
+		if (neo4j.isInt(obj[key])) {
+			obj[key] = obj[key].toInt();
+		}
+
 	}
 	return obj;
 }
@@ -15,7 +20,12 @@ async function query(...args) {
 	return res.records.map(recordToObj);
 }
 
+function int(x) {
+	return neo4j.int(x);
+}
+
 module.exports = {
 	query,
 	recordToObj,
+	int,
 };

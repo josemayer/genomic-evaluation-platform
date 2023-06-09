@@ -1,25 +1,72 @@
 const env = require('../config/env');
 const service = require('../services/neo4j');
 
-async function addPerson(req, res, next) {
-	const { id } = req.params
+const OK = 200;
+const INVALID = 404;
 
-	res.status(200);
-	res.json({ message: await service.addPerson(id) });
+async function addPerson(req, res) {
+	let { id } = req.params
 
-	next();
+	id = parseInt(id);
+
+	if (isNaN(id)) {
+		res.status(INVALID);
+		res.json({ message: "Id can not be NaN" });
+		return res;
+	}
+
+	res.status(OK);
+	res.json({ message: service.addPerson(id) });
+
+	return res;
+}
+
+async function listPeople(req, res) {
+	res.status(OK);
+	res.json(await service.listPeople());
+
+	return res;
+}
+
+function linkParent(req, res) {
+	let { parent, child, distance } = req.params
+
+	parent = parseInt(parent);
+	child = parseInt(child);
+	distance = parseInt(distance);
+
+	if (isNaN(parent)|| isNaN(child) || isNaN(distance)) {
+		res.status(INVALID);
+		res.json({message: "Arguments can not be NaN"});
+		return res;
+	}
+
+	res.status(OK);
+	res.json(service.linkParent(parent, child, distance))
+
 	return res
 }
 
-async function listPeople(req, res, next) {
-	res.status(200);
-	res.json(await service.listPeople());
+async function listFamily(req, res) {
+	let { id } = req.params
 
-	next()
-	return res;
+	id = parseInt(id);
+
+	if (isNaN(id)) {
+		res.status(INVALID);
+		res.json({ message: "Id can not be NaN" });
+		return res;
+	}
+
+	res.status(OK);
+	res.json(await service.listFamily(id));
+
+	return req;
 }
 
 module.exports = {
 	addPerson,
 	listPeople,
+	linkParent,
+	listFamily,
 };
