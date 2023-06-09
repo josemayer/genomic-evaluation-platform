@@ -2,7 +2,7 @@ const env = require('../config/env');
 const service = require('../services/neo4j');
 
 const OK = 200;
-const INVALID = 404;
+const INVALID = 400;
 
 async function addPerson(req, res) {
 	let { id } = req.params
