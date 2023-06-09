@@ -21,7 +21,7 @@ describe("redis controller", () => {
     describe("setKeyWithValue", () => {
       it("should return Setting key:value", async () => {
         const mockSetResult = 'Setting a:b';
-        const expectedResult = { message: mockSetResult };
+        const expectedResult = { message: 'Setting a:b' };
 
         redisService.set.mockResolvedValue(mockSetResult);
 
@@ -37,7 +37,7 @@ describe("redis controller", () => {
     describe("getKey", () => {
       it("should return b", async () => {
         const mockGetResult = 'b';
-        const expectedResult = { message: mockGetResult };
+        const expectedResult = { message: 'b' };
 
         redisService.get.mockResolvedValue(mockGetResult);
 
