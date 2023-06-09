@@ -32,6 +32,11 @@ function showRoutes(req, res, next) {
         path: '/users/client/{id}',
         description: 'Returns a client from the database by id.',
       },
+      {
+        method: 'POST',
+        path: '/users/client/new',
+        description: 'Creates a new client in the database.',
+      },
     ],
   });
 }
