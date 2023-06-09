@@ -96,7 +96,8 @@ describe('users service', () => {
         const clientData = {
           nome_completo: 'Alice',
           email: 'alice@example.com',
-          telefone: '(11) 77777-7777'
+          telefone: '(11) 77777-7777',
+          senha: '123456'
         };
         const userId = 1;
 
@@ -118,8 +119,8 @@ describe('users service', () => {
         expect(result).toEqual(expectedResult);
         expect(pg.query).toHaveBeenCalledTimes(2);
         expect(pg.query).toHaveBeenCalledWith(
-          'INSERT INTO usuario (nome_completo, email) VALUES ($1, $2) RETURNING id',
-          [clientData.nome_completo, clientData.email]
+          'INSERT INTO usuario (nome_completo, email, senha) VALUES ($1, $2, $3) RETURNING id',
+          [clientData.nome_completo, clientData.email, clientData.senha]
         );
         expect(pg.query).toHaveBeenCalledWith(
           'INSERT INTO cliente (usuario_id, telefone) VALUES ($1, $2)',
@@ -158,7 +159,8 @@ describe('users service', () => {
         const clientData = {
           nome_completo: 'Alice',
           email: 'alice@example.com',
-          telefone: '(11) 77777-7777'
+          telefone: '(11) 77777-7777',
+          senha: '123456'
         };
         const dbError = new Error('DB Error');
         pg.query.mockRejectedValueOnce(dbError);
@@ -166,8 +168,8 @@ describe('users service', () => {
         await expect(users.insertClient(clientData)).rejects.toThrow('DB Error');
         expect(pg.query).toHaveBeenCalledTimes(1);
         expect(pg.query).toHaveBeenCalledWith(
-          'INSERT INTO usuario (nome_completo, email) VALUES ($1, $2) RETURNING id',
-          [clientData.nome_completo, clientData.email]
+          'INSERT INTO usuario (nome_completo, email, senha) VALUES ($1, $2, $3) RETURNING id',
+          [clientData.nome_completo, clientData.email, clientData.senha]
         );
       });
 
@@ -175,7 +177,8 @@ describe('users service', () => {
         const clientData = {
           nome_completo: 'Alice',
           email: 'alice@example.com',
-          telefone: '(11) 77777-7777'
+          telefone: '(11) 77777-7777',
+          senha: '123456'
         };
         const userId = 1;
 
@@ -188,8 +191,8 @@ describe('users service', () => {
         await expect(users.insertClient(clientData)).rejects.toThrow('DB Error');
         expect(pg.query).toHaveBeenCalledTimes(2);
         expect(pg.query).toHaveBeenCalledWith(
-          'INSERT INTO usuario (nome_completo, email) VALUES ($1, $2) RETURNING id',
-          [clientData.nome_completo, clientData.email]
+          'INSERT INTO usuario (nome_completo, email, senha) VALUES ($1, $2, $3) RETURNING id',
+          [clientData.nome_completo, clientData.email, clientData.senha]
         );
         expect(pg.query).toHaveBeenCalledWith(
           'INSERT INTO cliente (usuario_id, telefone) VALUES ($1, $2)',

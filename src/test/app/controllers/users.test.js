@@ -132,11 +132,14 @@ describe("users controller", () => {
           nome_completo: 'John Doe',
           email: 'john@example.com',
           telefone: '(11) 12345-6789',
+          senha: '654321',
         };
 
         const insertedClient = {
           id: 1,
-          ...clientData,
+          nome_completo: 'John Doe',
+          email: 'john@example.com',
+          telefone: '(11) 12345-6789',
         };
 
         usersService.insertClient.mockResolvedValue(insertedClient);
@@ -197,6 +200,7 @@ describe("users controller", () => {
         mockRequest.body = {
           nome_completo: 'Bob',
           email: 'bob-the-tester@example.com',
+          telefone: '(11) 09809-0909',
         };
 
         await users.registerClient(mockRequest, mockResponse, mockNext);
@@ -217,6 +221,7 @@ describe("users controller", () => {
           nome_completo: 'Bob',
           email: 'bob-the-tester@example.com',
           telefone: '(11) 55559-1234',
+          senha: '665544',
         };
 
         mockRequest.body = clientData;

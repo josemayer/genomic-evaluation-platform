@@ -72,9 +72,9 @@ function isEmptyObj(obj) {
 }
 
 async function registerClient(req, res, next) {
-  const { nome_completo, email, telefone } = req.body;
+  const { nome_completo, email, telefone, senha } = req.body;
 
-  if (!nome_completo || !email || !telefone) {
+  if (!nome_completo || !email || !telefone || !senha) {
     res.status(400);
     res.json({
       message: 'Incomplete fields',
@@ -87,6 +87,7 @@ async function registerClient(req, res, next) {
       nome_completo,
       email,
       telefone,
+      senha,
     };
 
     const insertedClient = await users.insertClient(clientData);

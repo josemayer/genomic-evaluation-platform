@@ -36,10 +36,10 @@ async function getClientById(id) {
 }
 
 async function insertClient(clientData) {
-  const { nome_completo, email, telefone } = clientData;
+  const { nome_completo, email, telefone, senha } = clientData;
 
-  const userInsertQuery = 'INSERT INTO usuario (nome_completo, email) VALUES ($1, $2) RETURNING id';
-  const userInsertValues = [nome_completo, email];
+  const userInsertQuery = 'INSERT INTO usuario (nome_completo, email, senha) VALUES ($1, $2, $3) RETURNING id';
+  const userInsertValues = [nome_completo, email, senha];
   const userInsertResult = await pg.query(userInsertQuery, userInsertValues);
 
   const userId = userInsertResult.rows[0].id;
