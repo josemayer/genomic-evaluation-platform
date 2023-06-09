@@ -1,4 +1,4 @@
-FROM redis:latest
+FROM redis/redis-stack:latest
 
 RUN mkdir -p /var/db/redis/store /var/db/redis/log
 COPY ./conf/redis.conf /etc/redis/redis.conf
