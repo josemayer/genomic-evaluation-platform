@@ -1,4 +1,7 @@
 const redis = require('../../../app/controllers/redis');
+const redisService = require('../../../app/services/redis');
+
+jest.mock('../../../app/services/redis');
 
 describe("redis controller", () => {
   let mockRequest;
@@ -17,24 +20,32 @@ describe("redis controller", () => {
   describe("with passing", () => {
     describe("setKeyWithValue", () => {
       it("should return Setting key:value", async () => {
-        mockRequest.params = { key: 'a', value: 'b' };
+        const mockSetResult = 'Setting a:b';
+        const expectedResult = { message: mockSetResult };
 
+        redisService.set.mockResolvedValue(mockSetResult);
+
+        mockRequest.params = { key: 'a', value: 'b' };
         await redis.setKeyWithValue(mockRequest, mockResponse, mockNext);
 
         expect(mockResponse.status).toHaveBeenCalledWith(200);
-        expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Setting a:b' });
+        expect(mockResponse.json).toHaveBeenCalledWith(expectedResult);
         expect(mockNext).not.toHaveBeenCalled();
       });
     });
 
     describe("getKey", () => {
       it("should return b", async () => {
-        mockRequest.params = { key: 'a'};
+        const mockGetResult = 'b';
+        const expectedResult = { message: mockGetResult };
 
+        redisService.get.mockResolvedValue(mockGetResult);
+
+        mockRequest.params = { key: 'a'};
         await redis.getValue(mockRequest, mockResponse, mockNext);
 
         expect(mockResponse.status).toHaveBeenCalledWith(200);
-        expect(mockResponse.json).toHaveBeenCalledWith({ message: 'b' });
+        expect(mockResponse.json).toHaveBeenCalledWith(expectedResult);
         expect(mockNext).not.toHaveBeenCalled();
       });
     });
