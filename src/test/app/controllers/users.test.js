@@ -125,6 +125,33 @@ describe("users controller", () => {
         expect(mockResponse.json).toHaveBeenCalledWith(expectedResult);
       });
     });
+
+    describe("registerClient", () => {
+      it('should register a new client', async () => {
+        const clientData = {
+          nome_completo: 'John Doe',
+          email: 'john@example.com',
+          telefone: '(11) 12345-6789',
+        };
+
+        const insertedClient = {
+          id: 1,
+          ...clientData,
+        };
+
+        usersService.insertClient.mockResolvedValue(insertedClient);
+
+        mockRequest.body = clientData;
+
+        await users.registerClient(mockRequest, mockResponse, mockNext);
+
+        expect(mockResponse.status).toHaveBeenCalledWith(201);
+        expect(mockResponse.json).toHaveBeenCalledWith({
+          message: 'Client registered successfully',
+          client: insertedClient,
+        });
+      });
+    });
   });
 
   describe("with failing", () => {
@@ -162,6 +189,44 @@ describe("users controller", () => {
 
         expect(mockResponse.status).toHaveBeenCalledWith(404);
         expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Not found' });
+      });
+    });
+
+    describe("registerClient", () => {
+      it('should return an error for incomplete client information', async () => {
+        mockRequest.body = {
+          nome_completo: 'Bob',
+          email: 'bob-the-tester@example.com',
+        };
+
+        await users.registerClient(mockRequest, mockResponse, mockNext);
+
+        expect(mockResponse.status).toHaveBeenCalledWith(400);
+        expect(mockResponse.json).toHaveBeenCalledWith({
+          message: 'Incomplete fields',
+        });
+      });
+
+      it('should return an error when insertion fails', async () => {
+        const error = new Error('Failed to insert client in service');
+        error.statusCode = 500;
+
+        usersService.insertClient.mockRejectedValue(error);
+
+        const clientData = {
+          nome_completo: 'Bob',
+          email: 'bob-the-tester@example.com',
+          telefone: '(11) 55559-1234',
+        };
+
+        mockRequest.body = clientData;
+
+        await users.registerClient(mockRequest, mockResponse, mockNext);
+
+        expect(mockResponse.status).toHaveBeenCalledWith(error.statusCode);
+        expect(mockResponse.json).toHaveBeenCalledWith({
+          message: error.message,
+        });
       });
     });
   });

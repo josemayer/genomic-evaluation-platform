@@ -71,7 +71,41 @@ function isEmptyObj(obj) {
   return Object.keys(obj).length === 0;
 }
 
+async function registerClient(req, res, next) {
+  const { nome_completo, email, telefone } = req.body;
+
+  if (!nome_completo || !email || !telefone) {
+    res.status(400);
+    res.json({
+      message: 'Incomplete fields',
+    });
+    return res;
+  }
+
+  try {
+    const clientData = {
+      nome_completo,
+      email,
+      telefone,
+    };
+
+    const insertedClient = await users.insertClient(clientData);
+
+    res.status(201);
+    res.json({
+      message: 'Client registered successfully',
+      client: insertedClient,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500);
+    res.json({
+      message: err.message,
+    });
+  }
+}
+
 module.exports = {
   listClients,
   clientInfo,
+  registerClient
 };
