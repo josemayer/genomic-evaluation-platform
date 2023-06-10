@@ -29,6 +29,17 @@ async function helloWorld() {
   return all;
 }
 
+/** 
+  * @param {Array<string | number | boolean>} commands
+  */
+async function execute(commands) {
+  const client = new Client()
+  await client.open(url);
+  const result =  await client.execute(commands);
+  await client.close();
+  return result;
+}
+
 async function set(key, value) {
   const client = new Client()
   await client.open(url);
@@ -47,5 +58,6 @@ async function get(key) {
 module.exports = {
   set,
   get,
-  helloWorld
+  helloWorld,
+  execute
 };
