@@ -6,8 +6,8 @@ const redis = require('../config/redis');
  */
 async function addCondition(id, sequencesWithProbs) {
   // TODO(luatil): Deal with failures
-  const sadd = ['sadd', `condition:${id}:sequence`,
-    Array.from(sequencesWithProbs.keys()).join(" ")]
+  const sadd = ['sadd', `condition:${id}:sequence`].concat(
+    Array.from(sequencesWithProbs.keys()));
   const saddResult = await redis.execute(sadd);
 
   const hset = ['hset', `condition:${id}:probs`]
@@ -15,6 +15,17 @@ async function addCondition(id, sequencesWithProbs) {
   const hsetResult = await redis.execute(hset);
 
   return [saddResult, hsetResult];
+}
+
+/**
+ * @param {number} id
+ * @param {string[]} sequences
+ */
+async function addUser(id, sequences) {
+  const sadd = ['sadd', `user:${id}:sequences`].concat(
+    sequences);
+  const saddResult = await redis.execute(sadd);
+  return saddResult;
 }
 
 async function helloWorld() {
@@ -38,5 +49,6 @@ module.exports = {
   set,
   get,
   helloWorld,
-  addCondition
+  addCondition,
+  addUser
 };
