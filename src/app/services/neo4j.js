@@ -24,9 +24,32 @@ async function listFamily(id) {
 	)
 }
 
+function addCondition(id) {
+	nj.query("create (a:Condition {id: $id})", {id:Integer =  nj.int(id)});
+	return "Created Condition with id: " + id;
+}
+
+function linkHasCondition(personId, conditionId) {
+	nj.query(
+		"match (p:Person {id: $pid}), (c:Condition {id: $cid}) create (p) -[:Has]-> (c)",
+		{ pid:Integer = nj.int(personId), cid:Integer = nj.int(conditionId) }
+	);
+	return `Linked person ${personId} with condition ${conditionId}`;
+}
+
+async function listPersonConditions(personId) {
+	return await nj.query(
+		"match (:Person {id: $pid}) -[:Has]-> (c:Condition) return c.id as id",
+		{ pid:Integer = nj.int(personId) }
+	);
+}
+
 module.exports = {
 	addPerson,
 	listPeople,
 	linkParent,
 	listFamily,
+	addCondition,
+	linkHasCondition,
+	listPersonConditions,
 };

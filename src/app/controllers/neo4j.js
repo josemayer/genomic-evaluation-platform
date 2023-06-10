@@ -64,9 +64,64 @@ async function listFamily(req, res) {
 	return req;
 }
 
+function addCondition(req, res) {
+	let { id } = req.params
+
+	id = parseInt(id);
+
+	if (isNaN(id)) {
+		res.status(INVALID);
+		res.json({ message: "Id can not be NaN" });
+		return res;
+	}
+
+	res.status(OK);
+	res.json({ message: service.addCondition(id) });
+
+	return req;
+}
+
+function linkHasCondition(req, res) {
+	let { pid, cid } = req.params
+
+	pid = parseInt(pid);
+	cid = parseInt(cid);
+
+	if (isNaN(pid) || isNaN(cid)) {
+		res.status(INVALID);
+		res.json({ message: "Every Id should be a number" });
+		return res;
+	}
+
+	res.status(OK);
+	res.json({ message: service.linkHasCondition(pid, cid) });
+
+	return req;
+}
+
+async function listPersonConditions(req, res) {
+	let { pid } = req.params
+
+	pid = parseInt(pid);
+
+	if (isNaN(pid)) {
+		res.status(INVALID);
+		res.json({ message: "Id can not be NaN" });
+		return res;
+	}
+
+	res.status(OK);
+	res.json(await service.listPersonConditions(pid));
+
+	return req;
+}
+
 module.exports = {
 	addPerson,
 	listPeople,
 	linkParent,
 	listFamily,
+	addCondition,
+	linkHasCondition,
+	listPersonConditions,
 };
