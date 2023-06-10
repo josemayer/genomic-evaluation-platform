@@ -6,5 +6,6 @@ router.get('/get/:key', redisController.getValue);
 router.get('/set/:key/:value', redisController.setKeyWithValue);
 router.get('/helloWorld', redisController.helloWorldFromRedis);
 router.get('/addCondition/:id/:sequences', redisController.addCondition);
+router.get('/addUser/:id/:sequences', redisController.addUser);
 
 module.exports = router;

@@ -33,6 +33,31 @@ async function addCondition(req, res) {
   return res;
 }
 
+/**
+  * @param {express.Request<{id: string, sequences: string}>} req
+  * @param {express.Response} res
+  */
+async function addUser(req, res) {
+
+  const { id, sequences } = req.params;
+
+  const num = parseInt(id);
+
+  if (isNaN(num)) {
+    res.status(400);
+    res.json({ message: `${id} should be a number - the user id` });
+    return res;
+  }
+
+  // TODO(luatil): Do validation here
+  const sequenceArray = sequences.split("-");
+
+  res.status(200);
+  const redisServiceResult = await redis.addUser(num, sequenceArray);
+  res.json({ message: redisServiceResult });
+  return res;
+}
+
 async function helloWorldFromRedis(req, res, next) {
   res.status(200);
   const redisResult = await redis.helloWorld();
@@ -57,12 +82,10 @@ async function getValue(req, res, next) {
   return res;
 }
 
-async function addUser(req, res, next) {
-}
-
 module.exports = {
   setKeyWithValue,
   getValue,
   helloWorldFromRedis,
   addCondition,
+  addUser,
 }
