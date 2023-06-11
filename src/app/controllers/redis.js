@@ -3,9 +3,32 @@ const redis = require('../services/redis');
 const express = require('express');
 
 /**
-  * @param {express.Request<{id: string, sequences: string}>} req
-  * @param {express.Response} res
-  */
+ * @param {express.Request<{userId: string}>} req
+ * @param {express.Response} res
+ */
+async function findUserConditions(req, res) {
+
+  const { userId } = req.params;
+
+  const num = parseInt(userId);
+
+  if (isNaN(num)) {
+    res.status(400);
+    res.json({ message: `${userId} should be a number - the user id` });
+    return res;
+  }
+
+  const redisResult = await redis.findUserConditions(num);
+
+  res.status(200);
+  res.json({ message: redisResult });
+  return res;
+}
+
+/**
+ * @param {express.Request<{id: string, sequences: string}>} req
+ * @param {express.Response} res
+ */
 async function addCondition(req, res) {
 
   const { id, sequences } = req.params;
@@ -34,9 +57,9 @@ async function addCondition(req, res) {
 }
 
 /**
-  * @param {express.Request<{id: string, sequences: string}>} req
-  * @param {express.Response} res
-  */
+ * @param {express.Request<{id: string, sequences: string}>} req
+ * @param {express.Response} res
+ */
 async function addUser(req, res) {
 
   const { id, sequences } = req.params;
@@ -88,4 +111,5 @@ module.exports = {
   helloWorldFromRedis,
   addCondition,
   addUser,
+  findUserConditions
 }
