@@ -18,9 +18,12 @@ const environment = {
       database: env.POSTGRES_DB || 'postgres',
     },
     redis: {
-      // NOTE(luatil): Format `redis[s]://[[username][:password]@][host][:port][/db-number]`
-      // NOTE(luatil): env.REDIS_HOST should be the the name of the container, as defined in the .yml file.
       url: `redis://${env.REDIS_USERNAME || 'default'}:${env.REDIS_PASSWORD || ''}@${env.REDIS_HOST || 'redis'}:${env.REDIS_PORT || '6379'}`
+    },
+    neo4j: {
+      host: "neo4j://" + (env.NEO4J_HOST || "neo4j"),
+      user: env.NEO4J_USER || "neo4j",
+      password: env.NEO4J_PASSWORD || "password",
     }
   },
 };

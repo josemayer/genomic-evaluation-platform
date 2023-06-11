@@ -11,6 +11,8 @@ services:
       - /src/node_modules
     env_file:
       - ./src/.env
+    ports:
+      - 4000:3000
     networks:
       - postgres_bridge
       - neo4j_bridge
@@ -59,7 +61,11 @@ services:
       - dev
 
   neo4j:
-    image: neo4j
+    build:
+      context: ./src/dbs/neo4j
+      dockerfile: Dockerfile
+    volumes:
+      - ./src/dbs/neo4j/cypher:/cypher
     env_file:
       - ./src/dbs/neo4j/.env
     networks:
