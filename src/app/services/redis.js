@@ -103,6 +103,20 @@ async function get(key) {
   return result;
 }
 
+// TODO(luatil): Implement the following service
+// def find_related(user):
+// 	user_key = f”users:{user.id}:codigos”
+// 	possibly_related = []
+// 	for other in users:
+// 		if user == other: return
+// 		other_key = f"users:{other.cod}:codigos"
+// 		intersec = sinter user_key other_key
+// 		indice_de_similaridade = f(intersec) 
+// 		if indice_de_similaridade > CONSTANTE_SIMILARIDADE:
+// 			possibly_related.append(other)
+// 	return possibly_related
+
+
 module.exports = {
   set,
   get,
