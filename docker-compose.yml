@@ -11,6 +11,8 @@ services:
       - /src/node_modules
     env_file:
       - ./src/.env
+    ports:
+      - 4000:3000
     networks:
       - postgres_bridge
       - neo4j_bridge
