@@ -1,6 +1,6 @@
 function showRoutes(req, res, next) {
   res.json({
-    message: 'Welcome, master database guys! Use the routes below to view examples of the API.',
+    message: 'Welcome to application! Use the routes below to navigate through API.',
     routes: [
       {
         method: 'GET',
