@@ -60,7 +60,11 @@ services:
       - dev
 
   neo4j:
-    image: neo4j
+    build:
+      context: ./src/dbs/neo4j
+      dockerfile: Dockerfile
+    volumes:
+      - ./src/dbs/neo4j/cypher:/cypher
     env_file:
       - ./src/dbs/neo4j/.env
     networks:
