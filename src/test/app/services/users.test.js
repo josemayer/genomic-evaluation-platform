@@ -101,30 +101,22 @@ describe('users service', () => {
         };
         const userId = 1;
 
-        const userInsertResult = { rows: [{ id: userId }] };
-        pg.query.mockResolvedValueOnce(userInsertResult);
-
-        const clientInsertResult = { rowCount: 1 };
-        pg.query.mockResolvedValueOnce(clientInsertResult);
+        pg.query.mockResolvedValue({ rows: [{ id: userId }] });
 
         const expectedResult = {
           id: userId,
           name: clientData.nome_completo,
-          email: clientData.email,
+          mail: clientData.email,
           phone: clientData.telefone,
         };
 
         const result = await users.insertClient(clientData);
 
         expect(result).toEqual(expectedResult);
-        expect(pg.query).toHaveBeenCalledTimes(2);
+        expect(pg.query).toHaveBeenCalledTimes(1);
         expect(pg.query).toHaveBeenCalledWith(
-          'INSERT INTO usuario (nome_completo, email, senha) VALUES ($1, $2, $3) RETURNING id',
-          [clientData.nome_completo, clientData.email, clientData.senha]
-        );
-        expect(pg.query).toHaveBeenCalledWith(
-          'INSERT INTO cliente (usuario_id, telefone) VALUES ($1, $2)',
-          [userId, clientData.telefone]
+          'INSERT INTO ClienteView (nome_completo, email, senha, telefone) VALUES ($1, $2, $3, $4) RETURNING id',
+          [clientData.nome_completo, clientData.email, clientData.senha, clientData.telefone]
         );
       });
     });
@@ -132,7 +124,7 @@ describe('users service', () => {
 
   describe('with failing', () => {
     describe('getAllClients', () => {
-      it('should return an error', async () => {
+      it('should return an error if query fails', async () => {
         pg.query.mockRejectedValue(new Error('DB Error'));
 
         await expect(users.getAllClients()).rejects.toThrow('DB Error');
@@ -155,7 +147,7 @@ describe('users service', () => {
     });
 
     describe('insertClient', () => {
-      it('should throw an error if the user insertion query fails', async () => {
+      it('should throw an error if the client insertion query fails', async () => {
         const clientData = {
           nome_completo: 'Alice',
           email: 'alice@example.com',
@@ -168,35 +160,8 @@ describe('users service', () => {
         await expect(users.insertClient(clientData)).rejects.toThrow('DB Error');
         expect(pg.query).toHaveBeenCalledTimes(1);
         expect(pg.query).toHaveBeenCalledWith(
-          'INSERT INTO usuario (nome_completo, email, senha) VALUES ($1, $2, $3) RETURNING id',
-          [clientData.nome_completo, clientData.email, clientData.senha]
-        );
-      });
-
-      it('should throw an error if the client insertion query fails', async () => {
-        const clientData = {
-          nome_completo: 'Alice',
-          email: 'alice@example.com',
-          telefone: '(11) 77777-7777',
-          senha: '123456'
-        };
-        const userId = 1;
-
-        const userInsertResult = { rows: [{ id: userId }] };
-        pg.query.mockResolvedValueOnce(userInsertResult);
-
-        const dbError = new Error('DB Error');
-        pg.query.mockRejectedValueOnce(dbError);
-
-        await expect(users.insertClient(clientData)).rejects.toThrow('DB Error');
-        expect(pg.query).toHaveBeenCalledTimes(2);
-        expect(pg.query).toHaveBeenCalledWith(
-          'INSERT INTO usuario (nome_completo, email, senha) VALUES ($1, $2, $3) RETURNING id',
-          [clientData.nome_completo, clientData.email, clientData.senha]
-        );
-        expect(pg.query).toHaveBeenCalledWith(
-          'INSERT INTO cliente (usuario_id, telefone) VALUES ($1, $2)',
-          [userId, clientData.telefone]
+          'INSERT INTO ClienteView (nome_completo, email, senha, telefone) VALUES ($1, $2, $3, $4) RETURNING id',
+          [clientData.nome_completo, clientData.email, clientData.senha, clientData.telefone]
         );
       });
     });

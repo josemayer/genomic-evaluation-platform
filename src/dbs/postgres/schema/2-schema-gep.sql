@@ -160,3 +160,64 @@ CREATE TABLE identifica_condicao (
       REFERENCES condicao (id),
     CONSTRAINT identifica_conexao_pk PRIMARY KEY (exame_id, tipo_painel_id, condicao_id)
 );
+
+--- Client view and triggers
+
+CREATE VIEW ClienteView AS
+SELECT u.id, u.nome_completo, u.email, u.senha, c.telefone
+FROM usuario u, cliente c
+WHERE u.id = c.usuario_id;
+
+CREATE FUNCTION functionInsertCliente() RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.id IS NULL THEN
+    NEW.id := nextval('usuario_id_seq');
+  END IF;
+
+  INSERT INTO usuario (id, nome_completo, email, senha)
+  VALUES (NEW.id, NEW.nome_completo, NEW.email, NEW.senha);
+
+	INSERT INTO cliente (usuario_id, telefone)
+	VALUES (NEW.id, NEW.telefone);
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE FUNCTION functionDeleteCliente() RETURNS TRIGGER AS $$
+BEGIN
+	DELETE FROM cliente
+	WHERE id = OLD.id;
+
+	DELETE FROM usuario
+	WHERE id = OLD.id;
+
+  RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE FUNCTION functionUpdateCliente() RETURNS TRIGGER AS $$
+BEGIN
+	UPDATE usuario
+	SET nome_completo = NEW.nome_completo, email = NEW.email, senha = NEW.senha
+	WHERE id = NEW.id;
+
+	UPDATE cliente
+	SET telefone = NEW.telefone
+	WHERE id = NEW.id;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER triggerInsertCliente
+INSTEAD OF INSERT ON ClienteView
+FOR EACH ROW EXECUTE PROCEDURE functionInsertCliente();
+
+CREATE TRIGGER triggerDeleteCliente
+INSTEAD OF DELETE ON ClienteView
+FOR EACH ROW EXECUTE PROCEDURE functionDeleteCliente();
+
+CREATE TRIGGER triggerUpdateCliente
+INSTEAD OF UPDATE ON ClienteView
+FOR EACH ROW EXECUTE PROCEDURE functionUpdateCliente();

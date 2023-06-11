@@ -38,20 +38,16 @@ async function getClientById(id) {
 async function insertClient(clientData) {
   const { nome_completo, email, telefone, senha } = clientData;
 
-  const userInsertQuery = 'INSERT INTO usuario (nome_completo, email, senha) VALUES ($1, $2, $3) RETURNING id';
-  const userInsertValues = [nome_completo, email, senha];
-  const userInsertResult = await pg.query(userInsertQuery, userInsertValues);
+  const clientInsertQuery = 'INSERT INTO ClienteView (nome_completo, email, senha, telefone) VALUES ($1, $2, $3, $4) RETURNING id';
+  const clientInsertValues = [nome_completo, email, senha, telefone];
+  const clientInsertResult = await pg.query(clientInsertQuery, clientInsertValues);
 
-  const userId = userInsertResult.rows[0].id;
-
-  const clientInsertQuery = 'INSERT INTO cliente (usuario_id, telefone) VALUES ($1, $2)';
-  const clientInsertValues = [userId, telefone];
-  await pg.query(clientInsertQuery, clientInsertValues);
+  const userId = clientInsertResult.rows[0].id;
 
   const insertedClient = {
     id: userId,
     name: nome_completo,
-    email,
+    mail: email,
     phone: telefone,
   };
 
