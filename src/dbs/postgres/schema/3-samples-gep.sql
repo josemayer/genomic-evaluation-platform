@@ -11,6 +11,8 @@ VALUES
   (9, 'Olivia Martinez', 'olivia.martinez@exemplo.com', 'test123'),
   (10, 'James Taylor', 'james.taylor@exemplo.com', 'letmein');
 
+ALTER SEQUENCE usuario_id_seq RESTART WITH 11;
+
 INSERT INTO administrador (usuario_id)
 VALUES
   (10);
@@ -49,6 +51,8 @@ VALUES
   (12, 8, '2023-06-10 09:10:12', false, 'Sua coleta foi registrada com sucesso!'),
   (13, 8, '2023-06-10 12:02:00', false, 'O seu exame foi registrado e será processado por um laboratorista em breve!');
 
+ALTER SEQUENCE notificacao_id_seq RESTART WITH 14;
+
 INSERT INTO tipo_painel (id, descricao)
 VALUES
   (1, 'Sequenciamento de Exoma Completo (WES)'),
@@ -64,6 +68,8 @@ VALUES
   (11, 'Farmacogenético'),
   (12, 'Pré-natal');
 
+ALTER SEQUENCE tipo_painel_id_seq RESTART WITH 13;
+
 INSERT INTO coleta (id, cliente_id, tipo_painel_id, data)
 VALUES
   (1, 1, 1, '2023-06-07 08:12:33'),
@@ -72,11 +78,15 @@ VALUES
   (4, 8, 9, '2023-06-10 09:10:12'),
   (5, 9, 2, '2023-06-01 14:01:10');
 
+ALTER SEQUENCE coleta_id_seq RESTART WITH 6;
+
 INSERT INTO exame (id, coleta_id, tempo_estimado)
 VALUES
   (1, 1, INTERVAL '15 days'),
   (2, 5, INTERVAL '15 days'),
   (3, 4, INTERVAL '6 days');
+
+ALTER SEQUENCE exame_id_seq RESTART WITH 4;
 
 INSERT INTO andamento_exame (usuario_id, exame_id, data, estado_do_exame)
 VALUES
@@ -96,6 +106,8 @@ VALUES
   (1, 'Doença caracterizada pela fragilidade e perda da densidade óssea, tornando os ossos mais suscetíveis a fraturas', 'Osteoporose', 0.1),
   (2, 'Doença crônica caracterizada pelo crescimento descontrolado de células malignas nos tecidos mamários', 'Câncer de Mama', 0.12),
   (3, 'Doença crônica genética caracterizada pela produção de muco espesso e pegajoso. Esse muco é capaz de bloquear as vias aéreas.', 'Fibrose cística', 0.00034);
+
+ALTER SEQUENCE condicao_id_seq RESTART WITH 4;
 
 INSERT INTO condicao_sequencia_dna (condicao_id, sequencia_dna, prob_seq, prob_seq_dado_cond)
 VALUES
