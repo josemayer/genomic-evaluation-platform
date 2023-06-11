@@ -29,8 +29,13 @@ async function helloWorld() {
   return all;
 }
 
-/** 
-  * @param {Array<string | number | boolean>} commands
+/**
+  * @typedef {Array<string | number | boolean>} redisCommand
+  */
+
+/**
+  * @param {redisCommand} commands
+  * @returns {Promise<Array<string>>}
   */
 async function execute(commands) {
   const client = new Client()
