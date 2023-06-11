@@ -16,7 +16,12 @@ function recordToObj(rec) {
 }
 
 async function query(...args) {
-	let res = await driver.executeQuery(...args);
+	let e;
+	let res = await driver.executeQuery(...args).catch(error => { e = error; return undefined });
+	if (res === undefined) {
+		console.log(e.code);
+		return {};
+	}
 	return res.records.map(recordToObj);
 }
 

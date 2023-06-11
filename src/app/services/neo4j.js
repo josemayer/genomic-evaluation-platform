@@ -11,7 +11,7 @@ async function listPeople() {
 
 function linkParent(parentId, childId, distance) {
 	nj.query(
-		"match (p:Person {id: $pid}), (c:Person {id: $cid}) create (p) -[:Parent {distance: $d}]-> (c)",
+		"match (p:Person {id: $pid}), (c:Person {id: $cid}) merge (p) -[:Parent {distance: $d}]-> (c)",
 		{ pid:Integer = nj.int(parentId), cid:Integer = nj.int(childId), d:Integer = nj.int(distance) }
 	);
 	return `Linked ${parentId} to ${childId} with distance ${distance}`;
@@ -31,7 +31,7 @@ function addCondition(id) {
 
 function linkHasCondition(personId, conditionId) {
 	nj.query(
-		"match (p:Person {id: $pid}), (c:Condition {id: $cid}) create (p) -[:Has]-> (c)",
+		"match (p:Person {id: $pid}), (c:Condition {id: $cid}) merge (p) -[:Has]-> (c)",
 		{ pid:Integer = nj.int(personId), cid:Integer = nj.int(conditionId) }
 	);
 	return `Linked person ${personId} with condition ${conditionId}`;
