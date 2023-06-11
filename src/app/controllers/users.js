@@ -43,7 +43,7 @@ async function clientInfo(req, res, next) {
       return res;
     }
 
-    if (Array.isArray(client)) {
+    if (isArray(client)) {
       client = client[0];
     }
 
