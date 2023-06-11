@@ -2,7 +2,7 @@ const pg = require('../config/postgres');
 
 async function getAllClients() {
   const clients = await pg.query(
-    "SELECT u.id, u.nome_completo, u.email, c.telefone FROM usuario AS u, cliente AS c WHERE u.id = c.usuario_id"
+    "SELECT id, nome_completo, email, telefone FROM ClienteView"
   );
 
   const clientsInfo = [];
@@ -19,7 +19,7 @@ async function getAllClients() {
 
 async function getClientById(id) {
   const client = await pg.query(
-    "SELECT u.id, u.nome_completo, u.email, c.telefone FROM usuario AS u, cliente AS c WHERE u.id = c.usuario_id AND u.id = $1",
+    "SELECT id, nome_completo, email, telefone FROM ClienteView WHERE id = $1",
     [id]
   );
 

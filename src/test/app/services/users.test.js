@@ -52,7 +52,7 @@ describe('users service', () => {
 
         expect(result).toEqual(expectedResult);
         expect(pg.query).toHaveBeenCalledWith(
-          "SELECT u.id, u.nome_completo, u.email, c.telefone FROM usuario AS u, cliente AS c WHERE u.id = c.usuario_id"
+          "SELECT id, nome_completo, email, telefone FROM ClienteView"
         );
       });
     });
@@ -85,7 +85,7 @@ describe('users service', () => {
 
         expect(result).toEqual(expectedResult);
         expect(pg.query).toHaveBeenCalledWith(
-          "SELECT u.id, u.nome_completo, u.email, c.telefone FROM usuario AS u, cliente AS c WHERE u.id = c.usuario_id AND u.id = $1",
+          "SELECT id, nome_completo, email, telefone FROM ClienteView WHERE id = $1",
           [1]
         );
       });
@@ -129,7 +129,7 @@ describe('users service', () => {
 
         await expect(users.getAllClients()).rejects.toThrow('DB Error');
         expect(pg.query).toHaveBeenCalledWith(
-          "SELECT u.id, u.nome_completo, u.email, c.telefone FROM usuario AS u, cliente AS c WHERE u.id = c.usuario_id"
+          "SELECT id, nome_completo, email, telefone FROM ClienteView"
         );
       });
     });
@@ -140,7 +140,7 @@ describe('users service', () => {
 
         await expect(users.getClientById(1)).rejects.toThrow('DB Error');
         expect(pg.query).toHaveBeenCalledWith(
-          "SELECT u.id, u.nome_completo, u.email, c.telefone FROM usuario AS u, cliente AS c WHERE u.id = c.usuario_id AND u.id = $1",
+          "SELECT id, nome_completo, email, telefone FROM ClienteView WHERE id = $1",
           [1]
         );
       });
