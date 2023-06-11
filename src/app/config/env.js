@@ -17,6 +17,11 @@ const environment = {
       password: env.POSTGRES_PASSWORD || 'postgres',
       database: env.POSTGRES_DB || 'postgres',
     },
+    neo4j: {
+      host: "neo4j://" + (env.NEO4J_HOST || "neo4j"),
+      user: env.NEO4J_USER || "neo4j",
+      password: env.NEO4J_PASSWORD || "password",
+    }
   },
 };
 

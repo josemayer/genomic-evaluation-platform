@@ -1,5 +1,6 @@
 const neo4j = require('neo4j-driver');
-const driver = neo4j.driver('neo4j://neo4j', neo4j.auth.basic('neo4j', 'password'));
+const env = require('./env').dbs.neo4j;
+const driver = neo4j.driver(env.host, neo4j.auth.basic(env.user, env.password));
 
 function recordToObj(rec) {
 	let obj = {};
