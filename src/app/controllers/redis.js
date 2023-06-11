@@ -1,6 +1,7 @@
 // @ts-check
 const redis = require('../services/redis');
 const express = require('express');
+const libdna = require('../lib/libdna');
 
 /**
  * @param {express.Request<{userId: string}>} req
@@ -25,13 +26,16 @@ async function findUserConditions(req, res) {
   return res;
 }
 
-/**
- * @param {express.Request<{id: string, sequences: string}>} req
- * @param {express.Response} res
- */
+async function searchAllUsers(req, res) {
+  const result = await redis.searchAllUsers();
+  res.status(200);
+  res.json({ message: result });
+  return res;
+}
+
 async function addCondition(req, res) {
 
-  const { id, sequences } = req.params;
+  const { id, prob, sequences } = req.params;
 
   const num = parseInt(id);
 
@@ -41,17 +45,57 @@ async function addCondition(req, res) {
     return res;
   }
 
-  /** @type {Map<string, number>} */
-  const sequencesWithProbs = new Map();
+  const probability = parseFloat(prob);
 
-  // TODO(luatil): Do validation here
-  sequences.split("-").forEach((el) => {
-    const [seq, prob] = el.split(":");
-    sequencesWithProbs.set(seq, parseFloat(prob));
-  });
+  if (isNaN(probability)) {
+    res.status(400);
+    res.json({ message: `${prob} should be a number - the probability` });
+    return res;
+  }
 
+  const sequenceArray = sequences.split("-").map((el) => el.toUpperCase());
+  const sequencesWithProbs = [];
+
+  for (let i = 0; i < sequenceArray.length; i++) {
+    let [seq, probInPop, probGivenSeq] = sequenceArray[i].split(":");
+    if (!libdna.validateDNA(seq)) {
+      res.status(400);
+      res.json({ message: `${seq} should be a DNA sequence` });
+      return res;
+    }
+
+    const parsedProbInPop = parseFloat(probInPop);
+    const parsedProbGivenSeq = parseFloat(probGivenSeq);
+
+    if (isNaN(parsedProbInPop)) {
+      res.status(400);
+      res.json({ message: `${probInPop} should be a number - the probability in population` });
+      return res;
+    }
+    if (isNaN(parsedProbGivenSeq)) {
+      res.status(400);
+      res.json({ message: `${probGivenSeq} should be a number - the probability given sequence` });
+      return res;
+    }
+    if(parsedProbInPop > 1 || parsedProbInPop < 0) {
+      res.status(400);
+      res.json({ message: `${probInPop} should be a number between 0 and 1 - the probability in population` });
+      return res;
+    }
+    if(parsedProbGivenSeq > 1 || parsedProbGivenSeq < 0) {
+      res.status(400);
+      res.json({ message: `${probGivenSeq} should be a number between 0 and 1 - the probability given sequence` });
+      return res;
+    }
+    sequencesWithProbs.push({
+      sequence: seq,
+      probabilityInPopulation: parsedProbInPop,
+      probabilityGivenSequence: parsedProbGivenSeq
+    });
+  }
+
+  const redisServiceResult = await redis.addCondition(num, probability, sequencesWithProbs);
   res.status(200);
-  const redisServiceResult = await redis.addCondition(num, sequencesWithProbs);
   res.json({ message: redisServiceResult });
   return res;
 }
@@ -73,7 +117,15 @@ async function addUser(req, res) {
   }
 
   // TODO(luatil): Do validation here
-  const sequenceArray = sequences.split("-");
+  const sequenceArray = sequences.split("-").map((el) => el.toUpperCase());
+
+  for (let i = 0; i < sequenceArray.length; i++) {
+    if (!libdna.validateDNA(sequenceArray[i])) {
+      res.status(400);
+      res.json({ message: `${sequenceArray[i]} is not a valid sequence` });
+      return res;
+    }
+  }
 
   res.status(200);
   const redisServiceResult = await redis.addUser(num, sequenceArray);
@@ -81,35 +133,9 @@ async function addUser(req, res) {
   return res;
 }
 
-async function helloWorldFromRedis(req, res, next) {
-  res.status(200);
-  const redisResult = await redis.helloWorld();
-  res.json({ message: redisResult });
-  return res;
-}
-
-async function setKeyWithValue(req, res, next) {
-  // NOTE(luatil): This should probably be a POST message
-  const { key, value } = req.params;
-  res.status(200);
-  const redisSetResult = await redis.set(key, value);
-  res.json({ message: redisSetResult });
-  return res;
-}
-
-async function getValue(req, res, next) {
-  const { key } = req.params;
-  res.status(200);
-  const value = await redis.get(key);
-  res.json({ message: value });
-  return res;
-}
-
 module.exports = {
-  setKeyWithValue,
-  getValue,
-  helloWorldFromRedis,
-  addCondition,
   addUser,
-  findUserConditions
-}
+  addCondition,
+  searchAllUsers,
+  findUserConditions,
+};
