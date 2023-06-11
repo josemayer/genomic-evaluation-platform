@@ -17,26 +17,27 @@ DROP TABLE IF EXISTS notificacao CASCADE;
 CREATE TABLE usuario (
   id            BIGSERIAL,
   nome_completo TEXT        NOT NULL,
-  email         TEXT        NOT NULL  UNIQUE,
+  email         TEXT        NOT NULL,
   senha         TEXT        NOT NULL,
 
-  CONSTRAINT usuario_pk PRIMARY KEY (id)
+  CONSTRAINT usuario_pk PRIMARY KEY (id),
+  CONSTRAINT usuario_email_unique UNIQUE (email)
 );
 
 CREATE TABLE administrador (
     usuario_id    BIGINT NOT NULL,
 
     CONSTRAINT admin_usuario_fk FOREIGN KEY (usuario_id)
-      REFERENCES usuario (id),
+      REFERENCES usuario (id) ON DELETE CASCADE,
     CONSTRAINT admin_pk PRIMARY KEY (usuario_id)
 );
 
 CREATE TABLE laborista (
     usuario_id            BIGINT NOT NULL,
-    numero_identificacao  BIGINT,
+    numero_identificacao  BIGINT NOT NULL,
 
     CONSTRAINT laborista_usuario_fk FOREIGN KEY (usuario_id)
-      REFERENCES usuario (id),
+      REFERENCES usuario (id) ON DELETE CASCADE,
     CONSTRAINT laborista_pk PRIMARY KEY (usuario_id)
 );
 
@@ -45,16 +46,16 @@ CREATE TABLE cliente (
     telefone    VARCHAR(20),
 
     CONSTRAINT cliente_usuario_fk FOREIGN KEY (usuario_id)
-      REFERENCES usuario (id),
+      REFERENCES usuario (id) ON DELETE CASCADE,
     CONSTRAINT cliente_pk PRIMARY KEY (usuario_id)
 );
 
 CREATE TABLE medico (
     usuario_id    BIGINT NOT NULL,
-    registro_crm  BIGINT,
+    registro_crm  BIGINT NOT NULL,
 
     CONSTRAINT medico_usuario_fk FOREIGN KEY (usuario_id)
-      REFERENCES usuario (id),
+      REFERENCES usuario (id) ON DELETE CASCADE,
     CONSTRAINT medico_pk PRIMARY KEY (usuario_id)
 );
 
@@ -66,7 +67,7 @@ CREATE TABLE notificacao (
     texto       TEXT        NOT NULL,
 
     CONSTRAINT notificacao_usuario_fk FOREIGN KEY (usuario_id)
-      REFERENCES usuario (id),
+      REFERENCES usuario (id) ON DELETE CASCADE,
     CONSTRAINT notificacao_pk PRIMARY KEY (id)
 );
 
@@ -84,7 +85,7 @@ CREATE TABLE coleta (
     data            TIMESTAMP   NOT NULL,
 
     CONSTRAINT coleta_cliente_fk FOREIGN KEY (cliente_id)
-      REFERENCES cliente (usuario_id),
+      REFERENCES cliente (usuario_id) ON DELETE CASCADE,
     CONSTRAINT coleta_tipo_painel_fk FOREIGN KEY (tipo_painel_id)
       REFERENCES tipo_painel (id),
     CONSTRAINT coleta_pk PRIMARY KEY (id)
@@ -97,7 +98,7 @@ CREATE TABLE exame (
     tempo_estimado  INTERVAL    NOT NULL,
 
     CONSTRAINT exame_coleta_fk FOREIGN KEY (coleta_id)
-      REFERENCES coleta (id),
+      REFERENCES coleta (id) ON DELETE CASCADE,
     CONSTRAINT exame_pk PRIMARY KEY (id)
 );
 
@@ -113,7 +114,9 @@ CREATE TABLE andamento_exame (
   CONSTRAINT andamento_exame_usuario_fk FOREIGN KEY (usuario_id)
     REFERENCES usuario (id),
   CONSTRAINT andamento_exame_exame_fk FOREIGN KEY (exame_id)
-    REFERENCES exame (id),
+    REFERENCES exame (id) ON DELETE CASCADE,
+  CONSTRAINT andamento_exame_estado_check
+    CHECK (estado_do_exame IN ('na fila', 'processando', 'completo', 'inválido', 'autorizado', 'cancelado')),
   CONSTRAINT andamento_exame_pk PRIMARY KEY (usuario_id, exame_id, data)
 );
 
@@ -123,7 +126,7 @@ CREATE TABLE painel (
     sequencia_de_codigo_genetico  TEXT    NOT NULL,
 
     CONSTRAINT painel_exame_fk FOREIGN KEY (exame_id)
-      REFERENCES exame (id),
+      REFERENCES exame (id) ON DELETE CASCADE,
     CONSTRAINT painel_tipo_painel_fk FOREIGN KEY (tipo_painel_id)
       REFERENCES tipo_painel (id),
     CONSTRAINT painel_pk PRIMARY KEY (exame_id, tipo_painel_id)
@@ -145,7 +148,7 @@ CREATE TABLE condicao_sequencia_dna (
     prob_seq_dado_cond  FLOAT   NOT NULL,
 
     CONSTRAINT condicao_sequencia_dna_condicao_fk FOREIGN KEY (condicao_id)
-      REFERENCES condicao (id),
+      REFERENCES condicao (id) ON DELETE CASCADE,
     CONSTRAINT condicao_sequencia_dna_pk PRIMARY KEY (condicao_id, sequencia_dna)
 );
 
@@ -155,13 +158,21 @@ CREATE TABLE identifica_condicao (
     condicao_id     BIGINT,
 
     CONSTRAINT identifica_condicao_painel_fk FOREIGN KEY (exame_id, tipo_painel_id)
-      REFERENCES painel (exame_id, tipo_painel_id),
+      REFERENCES painel (exame_id, tipo_painel_id) ON DELETE CASCADE,
     CONSTRAINT identifica_condicao_condicao_fk FOREIGN KEY (condicao_id)
       REFERENCES condicao (id),
     CONSTRAINT identifica_conexao_pk PRIMARY KEY (exame_id, tipo_painel_id, condicao_id)
 );
 
 --- Client view and triggers
+
+DROP VIEW IF EXISTS ClienteView CASCADE;
+DROP FUNCTION IF EXISTS functionInsertCliente() CASCADE;
+DROP FUNCTION IF EXISTS functionDeleteCliente() CASCADE;
+DROP FUNCTION IF EXISTS functionUpdateCliente() CASCADE;
+DROP TRIGGER IF EXISTS triggerInsertCliente ON ClienteView CASCADE;
+DROP TRIGGER IF EXISTS triggerDeleteCliente ON ClienteView CASCADE;
+DROP TRIGGER IF EXISTS triggerUpdateCliente ON ClienteView CASCADE;
 
 CREATE VIEW ClienteView AS
 SELECT u.id, u.nome_completo, u.email, u.senha, c.telefone
