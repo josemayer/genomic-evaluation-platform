@@ -17,6 +17,9 @@ const environment = {
       password: env.POSTGRES_PASSWORD || 'postgres',
       database: env.POSTGRES_DB || 'postgres',
     },
+    redis: {
+      url: `redis://${env.REDIS_USERNAME || 'default'}:${env.REDIS_PASSWORD || ''}@${env.REDIS_HOST || 'redis'}:${env.REDIS_PORT || '6379'}`
+    },
     neo4j: {
       host: "neo4j://" + (env.NEO4J_HOST || "neo4j"),
       user: env.NEO4J_USER || "neo4j",
