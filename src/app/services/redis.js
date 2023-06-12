@@ -5,7 +5,6 @@ const { redisUserSchema, redisConditionSchema, redisSequenceProbsSchema } = requ
  * @param {{sequence: string, probabilityInPopulation: number, probabilityGivenSequence: number}[]} sequencesWithProbs 
  */
 async function addCondition(id, probability, sequencesWithProbs) {
-  console.log(sequencesWithProbs);
   await client.open(url);
   const conditionRepository = client.fetchRepository(redisConditionSchema);
   await conditionRepository.createIndex();
