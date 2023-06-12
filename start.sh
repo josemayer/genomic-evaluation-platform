@@ -6,4 +6,5 @@ for f in $(find . -name .env.sample); do cp $f $(echo $f | sed 's/.sample//g'); 
 # Delete all .env files 
 # rm $(find . -name .env)
 
+docker compose --profile dev build
 docker compose --profile dev up
