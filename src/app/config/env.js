@@ -8,6 +8,7 @@ const environment = {
   app: {
     name: env.APP_NAME || 'API',
     version: env.APP_VERSION || '1.0.0',
+    jwtSecret: env.APP_JWT_SECRET || 'secret',
   },
   dbs: {
     postgres: {
