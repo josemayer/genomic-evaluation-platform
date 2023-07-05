@@ -1,4 +1,5 @@
 const users = require('../services/users');
+const auth = require('../services/auth');
 
 async function listClients(req, res, next) {
   try {
@@ -105,8 +106,46 @@ async function registerClient(req, res, next) {
   }
 }
 
+async function login(req, res) {
+  try {
+    const { mail, password } = req.body;
+    const token = await users.login(mail, password);
+    res.json({ token });
+  } catch (err) {
+    console.error(`Error during login:`, err.message);
+    res.status(err.statusCode || 500).json({ message: err.message });
+  }
+}
+
+function getLoginInfo(req, res) {
+  const auth_header = req.headers.authorization;
+
+  if (!auth_header) {
+    res.status(400);
+    res.json({
+      message: 'Required authorization header',
+    });
+
+    return;
+  }
+
+  try {
+    const info = auth.decodeToken(auth_header);
+
+    res.status(200);
+    res.json(info);
+  } catch (err) {
+    res.status(err.statusCode || 500);
+    res.json({
+      message: err.message,
+    });
+  }
+}
+
 module.exports = {
   listClients,
   clientInfo,
-  registerClient
+  registerClient,
+  login,
+  getLoginInfo,
 };

@@ -1,4 +1,7 @@
 const pg = require('../config/postgres');
+const env = require('../config/env');
+const jwt = require('jsonwebtoken');
+const helper = require('../helpers/query');
 
 async function getAllClients() {
   const clients = await pg.query(
@@ -54,8 +57,33 @@ async function insertClient(clientData) {
   return insertedClient;
 }
 
+async function login(mail, password) {
+  try {
+    const query = 'SELECT * FROM usuario WHERE email = $1';
+    const result = await pg.query(query, [mail]);
+
+    const user = helper.singleOrNone(result.rows);
+
+    if (!user || password !== user.senha) {
+      throw { statusCode: 401, message: 'Invalid credentials' };
+    }
+
+    const userData = {
+      id: user.id,
+      name: user.nome_completo,
+      mail: user.email
+    }
+
+    const token = jwt.sign({ userData }, env.app.jwtSecret, { expiresIn: '1h' });
+    return token;
+  } catch (err) {
+    throw err;
+  }
+}
+
 module.exports = {
   getAllClients,
   getClientById,
   insertClient,
+  login,
 };
