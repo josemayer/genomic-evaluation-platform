@@ -171,7 +171,7 @@ int newChild(argList args) {
 		if (rand() % MUTATION_CHANCE == 0) {
 			genes.insert(generateNewGene());
 		} else {
-			int p = rand() % 2;
+			int p = genes.size() % 2;
 			genes.insert(getRandomFromSet(parents[p]));
 		}
 	}
