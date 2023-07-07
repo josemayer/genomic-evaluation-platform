@@ -4,6 +4,7 @@
 #include <string>
 #include <deque>
 #include <map>
+#include <vector>
 #include <set>
 #include <cstdlib>
 #include <time.h>
@@ -19,7 +20,7 @@ using path = std::filesystem::path;
 #define DNA_SIZE 1000
 
 #define CONDITION_CHANCE 100
-#define CONDITION_THRESHOLD RAND_MAX / CONDITION_CHANCE
+#define MUTATION_CHANCE 500
 
 std::map<string, int(*)(argList)> commandMap;
 
@@ -38,6 +39,16 @@ std::ifstream readFromWorld(string subdir, string file) {
 	return std::ifstream(WORLD / subdir / file);
 }
 
+template <typename T>
+T getRandomFromSet(std::set<T> s) {
+	int ind = rand() % s.size();
+	auto it = s.begin();
+	while (ind--) {
+		it++;
+	}
+	return *it;
+}
+
 std::set<int> getConditionGenes() {
 	std::set<int> genes;
 	for (auto const& cond_file : fs::directory_iterator(WORLD / "conditions")) {
@@ -51,6 +62,19 @@ std::set<int> getConditionGenes() {
 		}
 	}
 	return genes;
+}
+
+int generateNewGene() {
+	static auto condGenes = getConditionGenes();
+
+	if (rand() % CONDITION_CHANCE == 0) {
+		return getRandomFromSet(condGenes);
+	} else {
+		int g = 0;
+		while (g == 0)
+			g = rand();
+		return g;
+	}
 }
 
 int help(argList args) {
@@ -106,20 +130,53 @@ int newPerson(argList args) {
 	std::set<int> condGenes = getConditionGenes();
 
 	while (genes.size() < DNA_SIZE) {
-		if (rand() < CONDITION_THRESHOLD) {
-			int x = rand() % condGenes.size();
-			auto it = condGenes.begin();
-			for (int i = 0; i < x; i++) {
-				it++;
-			}
-
-			genes.insert(*it);
-		} else {
-			genes.insert(rand());
-		}
+		genes.insert(generateNewGene());
 	}
 
 	auto f = writeToWorld("people", args[0]);
+
+	for (auto g : genes) {
+		f<<g<<std::endl;
+	}
+
+	return 0;
+}
+
+int newChild(argList args) {
+	if (args.size() > 0 && args[0] == "help") {
+		return 0;
+	}
+
+	if (args.size() < 2) {
+		std::cout<<"Missing parrent name";
+		return 1;
+	}
+
+	std::vector<std::ifstream> files;
+	files.push_back(readFromWorld("people", args[0]));
+	files.push_back(readFromWorld("people", args[1]));
+
+	std::vector<std::set<int>> parents(2, std::set<int>());
+
+	for (int i = 0; i < 2; i++) {
+		for (int j = 0; j < DNA_SIZE; j++) {
+			int g;
+			files[i] >> g;
+			parents[i].insert(g);
+		}
+	}
+
+	std::set<int> genes;
+	while (genes.size() < DNA_SIZE) {
+		if (rand() % MUTATION_CHANCE == 0) {
+			genes.insert(generateNewGene());
+		} else {
+			int p = rand() % 2;
+			genes.insert(getRandomFromSet(parents[p]));
+		}
+	}
+
+	auto f = writeToWorld("people", args[2]);
 
 	for (auto g : genes) {
 		f<<g<<std::endl;
@@ -132,6 +189,7 @@ int main(int argc, char *argv[]) {
 	commandMap = {
 		{"new_condition", newCondition},
 		{"new_person", newPerson},
+		{"new_child", newChild},
 		{"help", help},
 	};
 
