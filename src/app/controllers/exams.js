@@ -45,12 +45,12 @@ async function examInfo(req, res, next) {
   }
 
   try {
-    const exam = await exams.getExamById(req.params.id);
+    let exam = await exams.getExamById(req.params.id);
     const history = await exams.getExamHistory(req.params.id);
     const sample = await exams.getSampleOfExam(req.params.id);
     const total = 1;
 
-    if (!exam || isEmptyObj(exam) || exam.length == 0) {
+    if (!exam || isEmptyObj(exam) || exam.length === 0) {
       res.status(404);
       res.json({
         message: 'Not found',
