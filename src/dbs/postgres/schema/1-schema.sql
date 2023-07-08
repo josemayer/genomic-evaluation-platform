@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS usuario CASCADE;
 DROP TABLE IF EXISTS administrador CASCADE;
-DROP TABLE IF EXISTS laborista CASCADE;
+DROP TABLE IF EXISTS laboratorista CASCADE;
 DROP TABLE IF EXISTS cliente CASCADE;
 DROP TABLE IF EXISTS medico CASCADE;
 DROP TABLE IF EXISTS tipo_painel CASCADE;
@@ -32,13 +32,13 @@ CREATE TABLE administrador (
     CONSTRAINT admin_pk PRIMARY KEY (usuario_id)
 );
 
-CREATE TABLE laborista (
+CREATE TABLE laboratorista (
     usuario_id            BIGINT NOT NULL,
     numero_identificacao  BIGINT NOT NULL,
 
-    CONSTRAINT laborista_usuario_fk FOREIGN KEY (usuario_id)
+    CONSTRAINT laboratorista_usuario_fk FOREIGN KEY (usuario_id)
       REFERENCES usuario (id) ON DELETE CASCADE,
-    CONSTRAINT laborista_pk PRIMARY KEY (usuario_id)
+    CONSTRAINT laboratorista_pk PRIMARY KEY (usuario_id)
 );
 
 CREATE TABLE cliente (

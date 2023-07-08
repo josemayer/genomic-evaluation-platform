@@ -16,7 +16,7 @@ create table administrador
     primary key (usuario_id)
 );
 
-create table laborista
+create table laboratorista
 (
     usuario_id bigint,
     foreign key (usuario_id) references usuario (id),
@@ -45,7 +45,7 @@ create table exame
     cliente_id       bigint               not null,
     laboratorista_id bigint               not null,
     estado_do_exame  estado_do_exame_tipo not null,
-    foreign key (laboratorista_id) references laborista (usuario_id),
+    foreign key (laboratorista_id) references laboratorista (usuario_id),
     foreign key (tipo_painel_id) references tipo_painel (id),
     foreign key (cliente_id) references cliente (usuario_id),
     primary key (tipo_painel_id, cliente_id)
