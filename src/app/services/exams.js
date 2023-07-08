@@ -62,8 +62,7 @@ async function stepExam(user, body, type) {
   if (!type)
     throw new Error('Missing step type');
 
-  try {
-    if (type == 'enqueue') {
+    if (type === 'enqueue') {
       const sample_id = body.sample_id;
 
       if (!sample_id)
@@ -72,16 +71,17 @@ async function stepExam(user, body, type) {
       return await putExamInQueue(sample_id, user);
     }
 
-    if (type == 'process') {
+    if (type === 'process') {
       const exam_id = body.exam_id;
+      const dnaBody = body.dnaBody;
 
       if (!exam_id)
         throw new Error('Missing exam id');
 
-      return await processExam(exam_id, user);
+      return await processExam(exam_id, user, dnaBody);
     }
 
-    if (type == 'validate') {
+    if (type === 'validate') {
       const exam_id = body.exam_id;
 
       if (!exam_id)
@@ -91,9 +91,6 @@ async function stepExam(user, body, type) {
     }
 
     return null;
-  } catch (err) {
-    throw err;
-  }
 }
 
 function formatDate(date) {
