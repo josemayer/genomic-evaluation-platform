@@ -1,4 +1,7 @@
 const pg = require('../config/postgres');
+const env = require('../config/env');
+const jwt = require('jsonwebtoken');
+const helper = require('../helpers/query');
 
 async function getAllClients() {
   const clients = await pg.query(
@@ -54,8 +57,53 @@ async function insertClient(clientData) {
   return insertedClient;
 }
 
+async function login(mail, password) {
+  try {
+    const query = 'SELECT * FROM usuario WHERE email = $1';
+    const result = await pg.query(query, [mail]);
+
+    const user = helper.singleOrNone(result.rows);
+
+    if (!user || password !== user.senha) {
+      throw { statusCode: 401, message: 'Invalid credentials' };
+    }
+
+    const userSpecializations = await retrieveUserSpecializations(user.id);
+    const userData = {
+      id: user.id,
+      name: user.nome_completo,
+      mail: user.email,
+      types: userSpecializations,
+    }
+
+    const token = jwt.sign({ userData }, env.app.jwtSecret, { expiresIn: '1h' });
+    return token;
+  } catch (err) {
+    throw err;
+  }
+}
+
+async function retrieveUserSpecializations(userId) {
+  const specializations = ['cliente', 'laborista', 'medico', 'administrador'];
+  let userSpecializations = [];
+  for (let i = 0; i < specializations.length; i++) {
+    try {
+      const query = `SELECT * FROM ${specializations[i]} WHERE usuario_id = $1`;
+      const result = await pg.query(query, [userId]);
+
+      const user = helper.singleOrNone(result.rows);
+      if (user)
+        userSpecializations.push(specializations[i]);
+    } catch (err) {
+      throw err;
+    }
+  }
+  return userSpecializations;
+}
+
 module.exports = {
   getAllClients,
   getClientById,
   insertClient,
+  login,
 };
