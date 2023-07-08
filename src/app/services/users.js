@@ -1,7 +1,7 @@
 const pg = require('../config/postgres');
 const env = require('../config/env');
-const jwt = require('jsonwebtoken');
 const helper = require('../helpers/query');
+const auth = require('./auth');
 
 async function getAllClients() {
   const clients = await pg.query(
@@ -76,8 +76,7 @@ async function login(mail, password) {
       types: userSpecializations,
     }
 
-    const token = jwt.sign({ userData }, env.app.jwtSecret, { expiresIn: '1h' });
-    return token;
+    return auth.createToken(userData);
   } catch (err) {
     throw err;
   }
