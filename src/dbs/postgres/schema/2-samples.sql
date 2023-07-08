@@ -17,7 +17,7 @@ INSERT INTO administrador (usuario_id)
 VALUES
   (10);
 
-INSERT INTO laborista (usuario_id, numero_identificacao)
+INSERT INTO laboratorista (usuario_id, numero_identificacao)
 VALUES
   (3, 123456789),
   (4, 987654321);

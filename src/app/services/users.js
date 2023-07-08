@@ -84,7 +84,7 @@ async function login(mail, password) {
 }
 
 async function retrieveUserSpecializations(userId) {
-  const specializations = ['cliente', 'laborista', 'medico', 'administrador'];
+  const specializations = ['cliente', 'laboratorista', 'medico', 'administrador'];
   let userSpecializations = [];
   for (let i = 0; i < specializations.length; i++) {
     try {
