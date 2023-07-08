@@ -160,8 +160,8 @@ async function putExamInQueue(sample_id, user) {
 }
 
 async function processExam(id, user) {
-  if (!user.types.includes('laborista'))
-    throw new Error('Only laborists can process exams');
+  if (!user.types.includes('laboratorista'))
+    throw new Error('Only laboratory technicians can process exams');
 
   // pass
   return null;
