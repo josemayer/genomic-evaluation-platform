@@ -1,13 +1,13 @@
 const { Entity, Schema } = require('redis-om');
 
-class redisUser extends Entity { };
+class redisUser extends Entity { }
 
 const redisUserSchema = new Schema(redisUser, {
   id: { type: 'number' },
   genetic_codes: { type: 'string[]' }
 });
 
-class redisCondition extends Entity { };
+class redisCondition extends Entity { }
 
 const redisConditionSchema = new Schema(redisCondition, {
   id: { type: 'number' },
@@ -16,7 +16,7 @@ const redisConditionSchema = new Schema(redisCondition, {
 });
 
 
-class redisSequenceProbs extends Entity { };
+class redisSequenceProbs extends Entity { }
 
 const redisSequenceProbsSchema = new Schema(redisSequenceProbs, {
   conditionId: { type: 'number' },

@@ -128,7 +128,7 @@ async function addUser(req, res) {
   }
 
   res.status(200);
-  const redisServiceResult = await redis.addUser(num, sequenceArray);
+  const redisServiceResult = await redis.addGenesToUser(num, sequenceArray);
   res.json({ message: redisServiceResult });
   return res;
 }

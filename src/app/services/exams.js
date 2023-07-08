@@ -1,4 +1,5 @@
 const pg = require('../config/postgres');
+const redisService = require('../services/redis');
 
 async function getAllExams() {
   const exams = await pg.query('SELECT * FROM exame');
@@ -23,6 +24,7 @@ async function getExamById(id) {
 
   const examObj = {
     sample_id: exam.rows[0].coleta_id,
+    exam_id: exam.rows[0].id,
     estimated_time: exam.rows[0].tempo_estimado,
   };
   return examObj;
@@ -73,12 +75,15 @@ async function stepExam(user, body, type) {
 
     if (type === 'process') {
       const exam_id = body.exam_id;
-      const dnaBody = body.dnaBody;
+      const genes = body.genes;
 
       if (!exam_id)
         throw new Error('Missing exam id');
 
-      return await processExam(exam_id, user, dnaBody);
+      if (!genes)
+        throw new Error('Missing dna');
+
+      return await processExam(exam_id, user, genes);
     }
 
     if (type === 'validate') {
@@ -156,11 +161,14 @@ async function putExamInQueue(sample_id, user) {
   return null;
 }
 
-async function processExam(id, user) {
+async function processExam(id, user, genes) {
   if (!user.types.includes('laboratorista'))
     throw new Error('Only laboratory technicians can process exams');
 
-  // pass
+  const user_id = parseInt(user.id);
+
+  await redisService.addGenesToUser(user_id, genes);
+
   return null;
 }
 
