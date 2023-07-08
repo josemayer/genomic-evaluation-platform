@@ -1,27 +1,24 @@
+all: generator conditions people
+
 generator: generator.cpp
-	g++ -o $@ $<
+	g++ -std=c++17 -o $@ $<
 
 conditions: generator
 	./generator new_condition chule
-	sleep 1
 	./generator new_condition asma
-	sleep 1
 	./generator new_condition cancer_de_pulmao
-	sleep 1
 	./generator new_condition astigmatismo
 
-people: generator
+people: generator conditions
 	./generator new_person jose
-	sleep 1
 	./generator new_person marcos
-	sleep 1
 	./generator new_person joao
-	sleep 1
 	./generator new_person maria
-	sleep 1
 	./generator new_person lurdes
-	sleep 1
 	./generator new_person virginia
+	./generator new_child joao maria joana
+	./generator new_child jose lurdes joao_luis
+	./generator new_child marcos viriginia bernadete
 
 
 clean:

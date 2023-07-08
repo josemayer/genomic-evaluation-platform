@@ -30,6 +30,14 @@ void assertDirectoryExists(path p) {
 	}
 }
 
+float getRandomZeroToOne() {
+	return (float)rand() / (float)RAND_MAX;
+}
+
+float getRandomInRange(float min, float max) {
+	return min + (max - min) * getRandomZeroToOne();
+}
+
 std::ofstream writeToWorld(string subdir, string file) {
 	assertDirectoryExists(WORLD / subdir);
 	return std::ofstream(WORLD / subdir / file);
@@ -51,13 +59,14 @@ T getRandomFromSet(std::set<T> s) {
 
 std::set<int> getConditionGenes() {
 	std::set<int> genes;
+	float ignore;
 	for (auto const& cond_file : fs::directory_iterator(WORLD / "conditions")) {
 		std::ifstream file(cond_file.path());
 		int geneCount;
-		file>>geneCount;
+		file >> geneCount >> ignore;
 		while (geneCount--) {
 			int gene;
-			file>>gene;
+			file >> gene >> ignore >> ignore;
 			genes.insert(gene);
 		}
 	}
@@ -107,9 +116,12 @@ int newCondition(argList args) {
 
 	std::ofstream file = writeToWorld("conditions", args[0]);
 
-	file << genes.size();
+	float diseaseProbability = getRandomInRange(0.01, 0.3);
+	file << genes.size() << ' ' << diseaseProbability << std::endl;
 	for (auto gene : genes) {
-		file << gene << std::endl;
+		float p1 = getRandomZeroToOne();
+		float p2 = getRandomZeroToOne();
+		file << gene << ' ' << p1 << ' ' << p2 << std::endl;
 	}
 
 	return 0;
@@ -185,6 +197,19 @@ int newChild(argList args) {
 	return 0;
 }
 
+int hash(int x, char *str) {
+	int h = x;
+	while (*str) {
+		h = (h << 4) + *str++;
+		int g = h & 0xF0000000;
+		if (g) {
+			h ^= g >> 24;
+		}
+		h &= ~g;
+	}
+	return h ^ x;
+}
+
 int main(int argc, char *argv[]) {
 	commandMap = {
 		{"new_condition", newCondition},
@@ -198,12 +223,14 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-	srand(time(NULL));
-
 	argList arguments;
+	int seed = 42;
 	for (int i = 1; i < argc; i++) {
 		arguments.push_back(argv[i]);
+		seed = hash(seed, argv[i]);
 	}
+
+	srand(seed);
 
 	string command = arguments.front();
 	arguments.pop_front();
