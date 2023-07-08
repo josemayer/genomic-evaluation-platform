@@ -68,10 +68,12 @@ async function login(mail, password) {
       throw { statusCode: 401, message: 'Invalid credentials' };
     }
 
+    const userSpecializations = await retrieveUserSpecializations(user.id);
     const userData = {
       id: user.id,
       name: user.nome_completo,
-      mail: user.email
+      mail: user.email,
+      types: userSpecializations,
     }
 
     const token = jwt.sign({ userData }, env.app.jwtSecret, { expiresIn: '1h' });
@@ -79,6 +81,24 @@ async function login(mail, password) {
   } catch (err) {
     throw err;
   }
+}
+
+async function retrieveUserSpecializations(userId) {
+  const specializations = ['cliente', 'laborista', 'medico', 'administrador'];
+  let userSpecializations = [];
+  for (let i = 0; i < specializations.length; i++) {
+    try {
+      const query = `SELECT * FROM ${specializations[i]} WHERE usuario_id = $1`;
+      const result = await pg.query(query, [userId]);
+
+      const user = helper.singleOrNone(result.rows);
+      if (user)
+        userSpecializations.push(specializations[i]);
+    } catch (err) {
+      throw err;
+    }
+  }
+  return userSpecializations;
 }
 
 module.exports = {
