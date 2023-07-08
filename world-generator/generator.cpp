@@ -22,6 +22,8 @@ using path = std::filesystem::path;
 #define CONDITION_CHANCE 100
 #define MUTATION_CHANCE 500
 
+#define MIN_PANEL_SIZE 30
+
 std::map<string, int(*)(argList)> commandMap;
 
 void assertDirectoryExists(path p) {
@@ -57,17 +59,27 @@ T getRandomFromSet(std::set<T> s) {
 	return *it;
 }
 
+std::set<int> getSingleConditionGenes(std::ifstream file) {
+	float ignore;
+
+	std::set<int> genes;
+	int geneCount;
+	file >> geneCount >> ignore;
+	while (geneCount--) {
+		int gene;
+		file >> gene >> ignore >> ignore;
+		genes.insert(gene);
+	}
+	return genes;
+
+}
+
 std::set<int> getConditionGenes() {
 	std::set<int> genes;
-	float ignore;
 	for (auto const& cond_file : fs::directory_iterator(WORLD / "conditions")) {
 		std::ifstream file(cond_file.path());
-		int geneCount;
-		file >> geneCount >> ignore;
-		while (geneCount--) {
-			int gene;
-			file >> gene >> ignore >> ignore;
-			genes.insert(gene);
+		for (auto g : getSingleConditionGenes(std::move(file))) {
+			genes.insert(g);
 		}
 	}
 	return genes;
@@ -197,6 +209,54 @@ int newChild(argList args) {
 	return 0;
 }
 
+int newPanel(argList args) {
+	if (args.size() > 0 && args[0] == "help") {
+		return 0;
+	}
+
+	if (args.size() < 1) {
+		std::cerr<<"Missing peson to be avaluated";
+		return 1;
+	}
+
+	std::set<int> genes;
+	auto f = readFromWorld("people", args[0]);
+	int g;
+	for (int i = 0; i < DNA_SIZE; i++) {
+		f>>g;
+		genes.insert(g);
+	}
+
+	if (args.size() == 1) {
+		// get every gene
+		for (auto g : genes) {
+			std::cout<<g<<std::endl;
+		}
+	} else {
+		std::set<int> panel;
+		// Desease specific panel
+		for (int i = 1; i < args.size(); i++) {
+			auto f = readFromWorld("conditions", args[i]);
+			auto thisCondGenes = getSingleConditionGenes(std::move(f));
+			for (auto g : thisCondGenes) {
+				if (genes.find(g) != genes.end()) {
+					panel.insert(g);
+				}
+			}
+		}
+
+		while (panel.size() < MIN_PANEL_SIZE) {
+			panel.insert(getRandomFromSet(genes));
+		}
+
+		for (auto g : panel) {
+			std::cout<<g<<std::endl;
+		}
+	}
+
+	return 0;
+}
+
 int hash(int x, char *str) {
 	int h = x;
 	while (*str) {
@@ -215,6 +275,7 @@ int main(int argc, char *argv[]) {
 		{"new_condition", newCondition},
 		{"new_person", newPerson},
 		{"new_child", newChild},
+		{"new_panel", newPanel},
 		{"help", help},
 	};
 

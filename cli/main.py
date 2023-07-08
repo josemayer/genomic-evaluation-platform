@@ -1,9 +1,13 @@
 import http.client
 import json
 import os
+import subprocess
 
 ADDRESS = "localhost"
 PORT = 4000
+
+GENERATOR_PATH = "./../world-generator/"
+GENERATOR = "./generator"
 
 global_token = ""
 
@@ -102,16 +106,13 @@ def verifiy_exam(exam_id):
         print("Exame rejeitado")
 
 
-def do_exam(exam_id, file_name):
+def do_exam(exam_id, world_name):
 
-    if not os.path.exists(file_name):
-        print("Arquivo não existe")
-        return None
+    # request server for what conditions this exam can identify
+    conditions_to_find = ["asma", "chule"];
 
-    data = None
-    with open(file_name, 'r') as f:
-        data = f.read()
-
+    data = subprocess.check_output([GENERATOR, "new_panel", world_name] + conditions_to_find)
+    data = data.decode('utf-8')
     data = data.split('\n')
 
     req = make_post_request_with_token('/exams/step/process', {'exam_id': exam_id, "genes": data})
@@ -122,7 +123,7 @@ def do_exam(exam_id, file_name):
 
 
     print_string = f"""
-        Realizando o exame. 
+        Realizando o exame.
     """
 
     print(print_string)
@@ -181,6 +182,8 @@ def main():
         if login(email, password):
             logged = True
 
+    os.chdir(GENERATOR_PATH)
+
     while True:
         line = input("> ")
         tokens = line.split(" ")
@@ -199,11 +202,11 @@ def main():
             ask_for_exam(sample_id)
         elif tokens[0] == "fazer-exame":
             if len(tokens) != 3:
-                print("Comando invalido: fazer-exame <id_exame> <nome_do_arquivo>")
+                print("Comando invalido: fazer-exame <id_exame> <noma_da_pessoa_world>")
                 continue
             exam_id = tokens[1]
-            file_name = tokens[2]
-            do_exam(exam_id, file_name=file_name)
+            world_name = tokens[2]
+            do_exam(exam_id, world_name)
         elif tokens[0] == "verificar-exame":
             if len(tokens) != 2:
                 print("Comando invalido")
