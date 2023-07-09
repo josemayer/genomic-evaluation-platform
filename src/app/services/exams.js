@@ -20,7 +20,7 @@ async function getAllExams() {
 }
 
 async function getExamById(id) {
-  const exam = await pg.query('SELECT * FROM exame WHERE id = $1', [id]);
+  const exam = await pg.query('SELECT * FROM exame WHERE id = $1', [id], 'user');
 
   if (exam.rows.length === 0) {
     return null;
@@ -35,7 +35,7 @@ async function getExamById(id) {
 }
 
 async function getSampleOfExam(id) {
-  const sample = await pg.query('SELECT c.* FROM exame AS e, coleta AS c WHERE e.id = $1 AND e.coleta_id = c.id', [id]);
+  const sample = await pg.query('SELECT c.* FROM exame AS e, coleta AS c WHERE e.id = $1 AND e.coleta_id = c.id', [id], 'user');
 
   if (sample.rows.length === 0) {
     return null;
@@ -51,7 +51,7 @@ async function getSampleOfExam(id) {
 }
 
 async function getExamHistory(id) {
-  const history = await pg.query('SELECT * FROM andamento_exame WHERE exame_id = $1', [id]);
+  const history = await pg.query('SELECT * FROM andamento_exame WHERE exame_id = $1', [id], 'user');
 
   const historyArr = [];
   history.rows.forEach(h => {
@@ -137,11 +137,11 @@ async function putExamInQueue(sample_id, user) {
 
     const estimated_time = await estimateTime();
     const exam = await pg.query('INSERT INTO exame (coleta_id, tempo_estimado) VALUES ($1, $2) RETURNING *',
-      [sample_id, estimated_time]);
+      [sample_id, estimated_time], 'user');
 
     const exame_id = exam.rows[0].id;
     const step = await pg.query('INSERT INTO andamento_exame (exame_id, usuario_id, estado_do_exame, data) VALUES ($1, $2, $3, $4) RETURNING *',
-      [exame_id, user.id, 'na fila', formatted_date]);
+      [exame_id, user.id, 'na fila', formatted_date], 'user');
 
     const notification_text = `O seu exame ${exame_id} foi criado, está na fila e será processado em breve!`;
     await notifications.sendNotification(user.id, notification_text);
@@ -180,7 +180,7 @@ async function getConditionsOfExam(user, id) {
     throw new Error('Only laboratory technicians can get conditions of exams');
   // TODO(luatil): UNDO This id change
   id = 4;
-  const conditions = await pg.query('select * from pode_identificar_condicao pc inner join condicao on pc.condicao_id = condicao.id where pc.condicao_id = $1', [id])
+  const conditions = await pg.query('select * from pode_identificar_condicao pc inner join condicao on pc.condicao_id = condicao.id where pc.condicao_id = $1', [id], 'system')
 
   const historyArr = [];
   conditions.rows.forEach(h => {

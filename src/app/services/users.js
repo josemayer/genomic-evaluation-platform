@@ -5,7 +5,8 @@ const auth = require('./auth');
 
 async function getAllClients() {
   const clients = await pg.query(
-    "SELECT id, nome_completo, email, telefone FROM ClienteView"
+    "SELECT id, nome_completo, email, telefone FROM ClienteView",
+    [], 'user'
   );
 
   const clientsInfo = [];
@@ -23,7 +24,7 @@ async function getAllClients() {
 async function getClientById(id) {
   const client = await pg.query(
     "SELECT id, nome_completo, email, telefone FROM ClienteView WHERE id = $1",
-    [id]
+    [id], 'user'
   );
 
   if (client.rows.length > 0) {
@@ -43,7 +44,7 @@ async function insertClient(clientData) {
 
   const clientInsertQuery = 'INSERT INTO ClienteView (nome_completo, email, senha, telefone) VALUES ($1, $2, $3, $4) RETURNING id';
   const clientInsertValues = [nome_completo, email, senha, telefone];
-  const clientInsertResult = await pg.query(clientInsertQuery, clientInsertValues);
+  const clientInsertResult = await pg.query(clientInsertQuery, clientInsertValues, 'user');
 
   const userId = clientInsertResult.rows[0].id;
 
@@ -62,7 +63,7 @@ async function login(mail, password) {
     pg.query('BEGIN');
 
     const query = 'SELECT * FROM usuario WHERE email = $1';
-    const result = await pg.query(query, [mail]);
+    const result = await pg.query(query, [mail], 'user');
 
     const user = helper.singleOrNone(result.rows);
 
@@ -93,7 +94,7 @@ async function retrieveUserSpecializations(userId) {
   for (let i = 0; i < specializations.length; i++) {
     try {
       const query = `SELECT * FROM ${specializations[i]} WHERE usuario_id = $1`;
-      const result = await pg.query(query, [userId]);
+      const result = await pg.query(query, [userId], 'system');
 
       const user = helper.singleOrNone(result.rows);
       if (user)
