@@ -1,3 +1,6 @@
+--- Change timezone to UTC-3 (São Paulo)
+SET TIMEZONE TO 'America/Sao_Paulo';
+
 DROP TABLE IF EXISTS usuario CASCADE;
 DROP TABLE IF EXISTS administrador CASCADE;
 DROP TABLE IF EXISTS laboratorista CASCADE;
