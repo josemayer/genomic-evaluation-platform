@@ -59,6 +59,7 @@ describe('exams service', () => {
         ];
         const expectedResult = {
           sample_id: mockRows[0].coleta_id,
+          exam_id: mockRows[0].id,
           estimated_time: mockRows[0].tempo_estimado,
         };
         pg.query.mockResolvedValueOnce({ rows: mockRows });
