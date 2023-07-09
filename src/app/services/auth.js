@@ -16,6 +16,11 @@ function getBearerToken(auth_header) {
   return auth_header.replace('Bearer ', '');
 }
 
+function createToken(userData) {
+  return jwt.sign({ userData }, env.app.jwtSecret, { expiresIn: '1h' });
+}
+
 module.exports = {
   decodeToken,
+  createToken,
 };
