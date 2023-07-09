@@ -90,7 +90,7 @@ def login(email, password):
 
 
 def notifications():
-    notifications_internal = ["Voce tem que fazer o teste do joao", "Voce tem que fazer o teste do pedro"]
+    notifications_internal = make_get_request_with_token('/notifications')
     for notification in notifications_internal:
         print(notification)
 
@@ -154,8 +154,8 @@ def do_exam(exam_id, world_name):
     print(print_string)
 
 
-def register_sample(panel_type_id, user_id):
-    req = make_post_request_with_token('/samples/new', {'panel_type_id': panel_type_id, 'user_id': user_id})
+def register_sample(user_id):
+    req = make_post_request_with_token('/samples/new', {'user_id': user_id})
 
     if "sample" not in req:
         print("Erro ao registrar coleta:")
@@ -179,8 +179,10 @@ def view_samples():
         print(json.dumps(sample, indent=4, sort_keys=True))
 
 
-def ask_for_exam(sample_id):
-    req = make_post_request_with_token('/exams/step/enqueue', {'sample_id': sample_id})
+def ask_for_exam(sample_id, panel_type_id):
+    req = make_post_request_with_token('/exams/step/enqueue', {'sample_id': sample_id, 'panel_type_id': panel_type_id})
+
+    print(req)
 
     # TODO(luatil): Handle req failure
     exam_id = req['step_result']['exam_id']
@@ -202,8 +204,8 @@ def main():
         # email = input("Entre o seu email: ")
         # password = input("Entre a sua senha: ")
 
-        # email = "john.doe@exemplo.com"
-        # password = "password"
+        #  email = "john.doe@exemplo.com"
+        #  password = "password"
 
         email = "alice.johnson@exemplo.com"
         password = "qwerty"
@@ -224,11 +226,12 @@ def main():
         elif tokens[0] == "notificacoes":
             notifications()
         elif tokens[0] == "pedir-exame":
-            if len(tokens) != 2:
-                print("Comando invalido: pedir-exame <id_amostra>")
+            if len(tokens) != 3:
+                print("Comando invalido: pedir-exame <id_amostra> <id_painel>")
                 continue
             sample_id = tokens[1]
-            ask_for_exam(sample_id)
+            panel_type_id = tokens[2]
+            ask_for_exam(sample_id, panel_type_id)
         elif tokens[0] == "fazer-exame":
             if len(tokens) != 3:
                 print("Comando invalido: fazer-exame <id_exame> <noma_da_pessoa_world>")

@@ -9,6 +9,33 @@ async function sendNotification (user_id, notification_text) {
   `, [user_id, now, false, notification_text], 'system');
 }
 
+async function getNotifications (user_id) {
+  try {
+    pg.query(`BEGIN`, [], 'system');
+
+    const notifications = await pg.query(`
+      SELECT * FROM notificacao WHERE usuario_id = $1 ORDER BY data DESC;
+    `, [user_id], 'system');
+
+    await readAllNotifications();
+
+    await pg.query(`COMMIT`, [], 'system');
+
+    return notifications.rows;
+  } catch (err) {
+    await pg.query(`ROLLBACK`, [], 'system');
+    throw err;
+  }
+  return [];
+}
+
+async function readAllNotifications () {
+  const notification = await pg.query(`
+    UPDATE notificacao SET visualizado=true WHERE visualizado=false;
+  `, [], 'system');
+}
+
 module.exports = {
   sendNotification,
+  getNotifications
 };

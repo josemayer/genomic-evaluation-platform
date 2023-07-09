@@ -42,10 +42,10 @@ async function createSample(req, res) {
   try {
     const user = auth.decodeToken(auth_header);
 
-    if (!body.panel_type_id || !body.user_id) {
+    if (!body.user_id) {
       res.status(400);
       res.json({
-        message: 'Required panel_type_id and user_id in body',
+        message: 'Required user_id in body',
       });
       return res;
     }
@@ -58,7 +58,7 @@ async function createSample(req, res) {
       return res
     }
 
-    const sample = await samples.registerNewSample(body.user_id, body.panel_type_id);
+    const sample = await samples.registerNewSample(body.user_id);
 
     let notification_text = '';
     if (user.userData.id != body.user_id)

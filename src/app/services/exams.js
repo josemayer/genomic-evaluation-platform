@@ -13,6 +13,7 @@ async function getAllExams() {
     examsArr.push({
       id: exam.id,
       sample_id: exam.coleta_id,
+      panel_type_id: exam.tipo_painel_id,
       estimated_time: exam.tempo_estimado,
     });
   });
@@ -29,6 +30,7 @@ async function getExamById(id) {
   const examObj = {
     sample_id: exam.rows[0].coleta_id,
     exam_id: exam.rows[0].id,
+    panel_type_id: exam.rows[0].tipo_painel_id,
     estimated_time: exam.rows[0].tempo_estimado,
   };
   return examObj;
@@ -44,7 +46,6 @@ async function getSampleOfExam(id) {
   const sampleObj = {
     id: sample.rows[0].id,
     client_id: sample.rows[0].cliente_id,
-    panel_type_id: sample.rows[0].tipo_painel_id,
     date: sample.rows[0].data,
   };
   return sampleObj;
@@ -70,11 +71,12 @@ async function stepExam(user, body, type) {
 
     if (type === 'enqueue') {
       const sample_id = body.sample_id;
+      const panel_type_id = body.panel_type_id;
 
       if (!sample_id)
         throw new Error('Missing sample id');
 
-      return await putExamInQueue(sample_id, user);
+      return await putExamInQueue(sample_id, panel_type_id, user);
     }
 
     if (type === 'process') {
@@ -122,7 +124,7 @@ async function estimateTime() {
   return `${num_incomplete_exams} days`;
 }
 
-async function putExamInQueue(sample_id, user) {
+async function putExamInQueue(sample_id, panel_type_id, user) {
   if (!permissions.hasType(user.types, 'cliente'))
     throw new Error('Only clients can enqueue exams');
 
@@ -133,11 +135,11 @@ async function putExamInQueue(sample_id, user) {
   try {
     const formatted_date = time.getFormattedNow();
 
-    await pg.query("BEGIN");
+    await pg.query("BEGIN", [], 'user');
 
     const estimated_time = await estimateTime();
-    const exam = await pg.query('INSERT INTO exame (coleta_id, tempo_estimado) VALUES ($1, $2) RETURNING *',
-      [sample_id, estimated_time], 'user');
+    const exam = await pg.query('INSERT INTO exame (coleta_id, tipo_painel_id, tempo_estimado) VALUES ($1, $2, $3) RETURNING *',
+      [sample_id, panel_type_id, estimated_time], 'user');
 
     const exame_id = exam.rows[0].id;
     const step = await pg.query('INSERT INTO andamento_exame (exame_id, usuario_id, estado_do_exame, data) VALUES ($1, $2, $3, $4) RETURNING *',
@@ -146,11 +148,11 @@ async function putExamInQueue(sample_id, user) {
     const notification_text = `O seu exame ${exame_id} foi criado, está na fila e será processado em breve!`;
     await notifications.sendNotification(user.id, notification_text);
 
-    await pg.query("COMMIT");
+    await pg.query("COMMIT", [], 'user');
 
     return await getExamById(exame_id);
   } catch (err) {
-    await pg.query("ROLLBACK");
+    await pg.query("ROLLBACK", [], 'user');
     throw err;
   }
   return null;
