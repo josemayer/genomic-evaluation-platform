@@ -34,7 +34,7 @@ describe('exams service', () => {
         const allExams = await exams.getAllExams();
 
         expect(allExams).toEqual(expectedResult);
-        expect(pg.query).toHaveBeenCalledWith('SELECT * FROM exame');
+        expect(pg.query).toHaveBeenCalledWith('SELECT * FROM exame', [], 'user');
       });
 
       it('should return an empty array if no exams are found', async () => {
@@ -44,7 +44,7 @@ describe('exams service', () => {
         const allExams = await exams.getAllExams();
 
         expect(allExams).toEqual(mockRows);
-        expect(pg.query).toHaveBeenCalledWith('SELECT * FROM exame');
+        expect(pg.query).toHaveBeenCalledWith('SELECT * FROM exame', [], 'user');
       });
     });
 
@@ -67,7 +67,7 @@ describe('exams service', () => {
         const exam = await exams.getExamById(1);
 
         expect(exam).toEqual(expectedResult);
-        expect(pg.query).toHaveBeenCalledWith('SELECT * FROM exame WHERE id = $1', [1]);
+        expect(pg.query).toHaveBeenCalledWith('SELECT * FROM exame WHERE id = $1', [1], 'user');
       });
 
       it('should return null if the exam ID is not found', async () => {
@@ -77,7 +77,7 @@ describe('exams service', () => {
         const exam = await exams.getExamById(1);
 
         expect(exam).toEqual(null);
-        expect(pg.query).toHaveBeenCalledWith('SELECT * FROM exame WHERE id = $1', [1]);
+        expect(pg.query).toHaveBeenCalledWith('SELECT * FROM exame WHERE id = $1', [1], 'user');
       });
     });
 
@@ -104,7 +104,7 @@ describe('exams service', () => {
         expect(sample).toEqual(expectedResult);
         expect(pg.query).toHaveBeenCalledWith(
           'SELECT c.* FROM exame AS e, coleta AS c WHERE e.id = $1 AND e.coleta_id = c.id',
-          [1]
+          [1], 'user'
         );
       });
 
@@ -115,7 +115,7 @@ describe('exams service', () => {
         expect(await exams.getSampleOfExam(1)).toEqual(null);
         expect(pg.query).toHaveBeenCalledWith(
           'SELECT c.* FROM exame AS e, coleta AS c WHERE e.id = $1 AND e.coleta_id = c.id',
-          [1]
+          [1], 'user'
         );
       });
     });
@@ -154,7 +154,7 @@ describe('exams service', () => {
         const history = await exams.getExamHistory(1);
 
         expect(history).toEqual(expectedResult);
-        expect(pg.query).toHaveBeenCalledWith('SELECT * FROM andamento_exame WHERE exame_id = $1', [1]);
+        expect(pg.query).toHaveBeenCalledWith('SELECT * FROM andamento_exame WHERE exame_id = $1', [1], 'user');
       });
 
       it('should return an empty array if no exam history is found', async () => {
@@ -165,7 +165,7 @@ describe('exams service', () => {
         const history = await exams.getExamHistory(1);
 
         expect(history).toEqual(expectedResult);
-        expect(pg.query).toHaveBeenCalledWith('SELECT * FROM andamento_exame WHERE exame_id = $1', [1]);
+        expect(pg.query).toHaveBeenCalledWith('SELECT * FROM andamento_exame WHERE exame_id = $1', [1], 'user');
       });
     });
   });
@@ -179,7 +179,7 @@ describe('exams service', () => {
         const allExams = await exams.getAllExams();
 
         expect(allExams).not.toEqual({ rows: mockRows });
-        expect(pg.query).toHaveBeenCalledWith('SELECT * FROM exame');
+        expect(pg.query).toHaveBeenCalledWith('SELECT * FROM exame', [], 'user');
       });
 
       it('should throw an error if the query fails', async () => {
@@ -187,7 +187,7 @@ describe('exams service', () => {
         pg.query.mockRejectedValueOnce(mockError);
 
         await expect(exams.getAllExams()).rejects.toThrow(mockError);
-        expect(pg.query).toHaveBeenCalledWith('SELECT * FROM exame');
+        expect(pg.query).toHaveBeenCalledWith('SELECT * FROM exame', [], 'user');
       });
     });
 
@@ -197,7 +197,7 @@ describe('exams service', () => {
         pg.query.mockRejectedValueOnce(mockError);
 
         await expect(exams.getExamById(1)).rejects.toThrow(mockError);
-        expect(pg.query).toHaveBeenCalledWith('SELECT * FROM exame WHERE id = $1', [1]);
+        expect(pg.query).toHaveBeenCalledWith('SELECT * FROM exame WHERE id = $1', [1], 'user');
       });
     });
 
@@ -209,7 +209,7 @@ describe('exams service', () => {
         await expect(exams.getSampleOfExam(1)).rejects.toThrow(mockError);
         expect(pg.query).toHaveBeenCalledWith(
           'SELECT c.* FROM exame AS e, coleta AS c WHERE e.id = $1 AND e.coleta_id = c.id',
-          [1]
+          [1], 'user'
         );
       });
     });
@@ -220,7 +220,7 @@ describe('exams service', () => {
         pg.query.mockRejectedValueOnce(mockError);
 
         await expect(exams.getExamHistory(1)).rejects.toThrow(mockError);
-        expect(pg.query).toHaveBeenCalledWith('SELECT * FROM andamento_exame WHERE exame_id = $1', [1]);
+        expect(pg.query).toHaveBeenCalledWith('SELECT * FROM andamento_exame WHERE exame_id = $1', [1], 'user');
       });
     });
   });

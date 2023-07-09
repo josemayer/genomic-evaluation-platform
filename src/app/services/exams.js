@@ -6,7 +6,7 @@ const permissions = require('../helpers/permissions');
 const time = require('../helpers/time');
 
 async function getAllExams() {
-  const exams = await pg.query('SELECT * FROM exame');
+  const exams = await pg.query('SELECT * FROM exame', [], 'user');
 
   const examsArr = [];
   exams.rows.forEach(exam => {

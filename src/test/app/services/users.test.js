@@ -52,7 +52,8 @@ describe('users service', () => {
 
         expect(result).toEqual(expectedResult);
         expect(pg.query).toHaveBeenCalledWith(
-          "SELECT id, nome_completo, email, telefone FROM ClienteView"
+          "SELECT id, nome_completo, email, telefone FROM ClienteView",
+          [], 'user'
         );
       });
     });
@@ -86,7 +87,7 @@ describe('users service', () => {
         expect(result).toEqual(expectedResult);
         expect(pg.query).toHaveBeenCalledWith(
           "SELECT id, nome_completo, email, telefone FROM ClienteView WHERE id = $1",
-          [1]
+          [1], 'user'
         );
       });
     });
@@ -116,7 +117,7 @@ describe('users service', () => {
         expect(pg.query).toHaveBeenCalledTimes(1);
         expect(pg.query).toHaveBeenCalledWith(
           'INSERT INTO ClienteView (nome_completo, email, senha, telefone) VALUES ($1, $2, $3, $4) RETURNING id',
-          [clientData.nome_completo, clientData.email, clientData.senha, clientData.telefone]
+          [clientData.nome_completo, clientData.email, clientData.senha, clientData.telefone], 'user'
         );
       });
     });
@@ -129,7 +130,7 @@ describe('users service', () => {
 
         await expect(users.getAllClients()).rejects.toThrow('DB Error');
         expect(pg.query).toHaveBeenCalledWith(
-          "SELECT id, nome_completo, email, telefone FROM ClienteView"
+          "SELECT id, nome_completo, email, telefone FROM ClienteView", [], 'user'
         );
       });
     });
@@ -141,7 +142,7 @@ describe('users service', () => {
         await expect(users.getClientById(1)).rejects.toThrow('DB Error');
         expect(pg.query).toHaveBeenCalledWith(
           "SELECT id, nome_completo, email, telefone FROM ClienteView WHERE id = $1",
-          [1]
+          [1], 'user'
         );
       });
     });
@@ -161,7 +162,7 @@ describe('users service', () => {
         expect(pg.query).toHaveBeenCalledTimes(1);
         expect(pg.query).toHaveBeenCalledWith(
           'INSERT INTO ClienteView (nome_completo, email, senha, telefone) VALUES ($1, $2, $3, $4) RETURNING id',
-          [clientData.nome_completo, clientData.email, clientData.senha, clientData.telefone]
+          [clientData.nome_completo, clientData.email, clientData.senha, clientData.telefone], 'user'
         );
       });
     });
