@@ -93,7 +93,6 @@ def notifications():
     for notification in notifications_internal:
         print(notification)
 
-
 def verifiy_exam(exam_id):
     print(f"Verificando o exame {exam_id}")
     summary = "Identifiquei:"
@@ -113,6 +112,7 @@ def verifiy_exam(exam_id):
 
     res = summary + '\nCONDICOES\n' + "\n".join([": ".join(cond) for cond in conditions]) + "\nRELACOES\n" + "\n".join(
         [": ".join(rel) for rel in relations])
+
     print(res)
     answer = input("Y/N: ")
 
