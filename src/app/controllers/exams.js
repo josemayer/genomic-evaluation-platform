@@ -109,6 +109,33 @@ async function stepExam(req, res) {
   return res;
 }
 
+async function identifyExam(req, res) {
+  const { id } = req.params;
+  const auth_header = req.headers.authorization;
+
+  if (!auth_header) {
+    res.status(400);
+    res.json({
+      message: 'Required authorization header'
+    });
+    return res;
+  }
+
+  try {
+    const user = await auth.decodeToken(auth_header);
+    const conditions = await exams.getConditionsOfExam(user.userData, id);
+
+    res.status(200);
+    res.json({
+      conditions_to_find: conditions,
+    });
+  } catch(err) {
+    res.status(err.statusCode || 500);
+    res.json({ message: err.message });
+  }
+
+}
+
 function isArray(obj) {
  return Array.isArray(obj);
 }
@@ -121,4 +148,5 @@ module.exports = {
   listExams,
   examInfo,
   stepExam,
+  identifyExam,
 };

@@ -105,7 +105,8 @@ INSERT INTO condicao (id, descricao, nome, prob_populacao)
 VALUES
   (1, 'Doença caracterizada pela fragilidade e perda da densidade óssea, tornando os ossos mais suscetíveis a fraturas', 'Osteoporose', 0.1),
   (2, 'Doença crônica caracterizada pelo crescimento descontrolado de células malignas nos tecidos mamários', 'Câncer de Mama', 0.12),
-  (3, 'Doença crônica genética caracterizada pela produção de muco espesso e pegajoso. Esse muco é capaz de bloquear as vias aéreas.', 'Fibrose cística', 0.00034);
+  (3, 'Doença crônica genética caracterizada pela produção de muco espesso e pegajoso. Esse muco é capaz de bloquear as vias aéreas.', 'Fibrose cística', 0.00034),
+  (4, 'Doença possivelmente terminal de câncer de pulmão', 'câncer de pulmão', 0.03);
 
 ALTER SEQUENCE condicao_id_seq RESTART WITH 4;
 
@@ -122,3 +123,7 @@ INSERT INTO identifica_condicao (exame_id, tipo_painel_id, condicao_id)
 VALUES
   (2, 2, 1),
   (2, 2, 3);
+
+INSERT INTO pode_identificar_condicao (tipo_painel_id, condicao_id)
+VALUES
+  (6, 4);

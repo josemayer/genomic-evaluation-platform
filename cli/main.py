@@ -52,6 +52,25 @@ def make_post_request_with_token(url, payload):
     data = json.loads(data)
     return data
 
+def make_get_request_with_token(url):
+    global global_token
+
+    if global_token == "":
+        return None
+
+    bearer_token = 'Bearer ' + global_token
+
+    conn = http.client.HTTPConnection(ADDRESS, PORT)
+    headers = {
+        'Authorization': bearer_token
+    }
+    conn.request("GET", url, '', headers)
+    res = conn.getresponse()
+    data = res.read()
+    data = data.decode("utf-8")
+    data = json.loads(data)
+    return data
+
 
 # returns a token
 def login(email, password):
@@ -70,9 +89,9 @@ def login(email, password):
 
 
 def notifications():
-    notifications = ["Voce tem que fazer o teste do joao", "Voce tem que fazer o teste do pedro"]
-    for noti in notifications:
-        print(noti)
+    notifications_internal = ["Voce tem que fazer o teste do joao", "Voce tem que fazer o teste do pedro"]
+    for notification in notifications_internal:
+        print(notification)
 
 
 def verifiy_exam(exam_id):
@@ -107,9 +126,16 @@ def verifiy_exam(exam_id):
 
 
 def do_exam(exam_id, world_name):
-
     # request server for what conditions this exam can identify
-    conditions_to_find = ["asma", "chule"];
+#    conditions_to_find = ["asma", "chule"]
+
+    req = make_get_request_with_token(f"/exams/identify/{exam_id}")
+
+    if "message" in req:
+        print(req)
+        return None
+
+    conditions_to_find = req['conditions_to_find']
 
     data = subprocess.check_output([GENERATOR, "new_panel", world_name] + conditions_to_find)
     data = data.decode('utf-8')
@@ -120,7 +146,6 @@ def do_exam(exam_id, world_name):
     if "message" in req:
         print(req)
         return None
-
 
     print_string = f"""
         Realizando o exame.
@@ -171,7 +196,6 @@ def main():
     while not logged:
         # email = input("Entre o seu email: ")
         # password = input("Entre a sua senha: ")
-
 
         # email = "john.doe@exemplo.com"
         # password = "password"

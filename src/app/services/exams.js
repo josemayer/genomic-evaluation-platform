@@ -180,10 +180,26 @@ async function validateExam(id, user) {
   return null;
 }
 
+async function getConditionsOfExam(user, id) {
+  if (!user.types.includes('laboratorista') && !user.types.includes('medico'))
+    throw new Error('Only laboratory technicians can get conditions of exams');
+  // TODO(luatil): UNDO This id change 
+  id = 4;
+  const conditions = await pg.query('select * from pode_identificar_condicao pc inner join condicao on pc.condicao_id = condicao.id where pc.condicao_id = $1', [id])
+
+  const historyArr = [];
+  conditions.rows.forEach(h => {
+      historyArr.push(h.nome);
+  });
+  return historyArr;
+  return ['asma, chule']
+}
+
 module.exports = {
   getAllExams,
   getExamById,
   getSampleOfExam,
   getExamHistory,
   stepExam,
+  getConditionsOfExam
 };
