@@ -6,7 +6,7 @@ async function sendNotification (user_id, notification_text) {
   const notification = await pg.query(`
     INSERT INTO notificacao (usuario_id, data, visualizado, texto)
     VALUES ($1, $2, $3, $4);
-  `, [user_id, now, false, notification_text]);
+  `, [user_id, now, false, notification_text], 'system');
 }
 
 module.exports = {
