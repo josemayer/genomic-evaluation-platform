@@ -10,7 +10,6 @@ async function getSamplesOfClient(client_id) {
     userSamples.push({
       id: sample.id,
       client_id: sample.cliente_id,
-      panel_type_id: sample.tipo_painel_id,
       date: sample.data,
     });
   });
@@ -24,15 +23,14 @@ async function getSampleById(sample_id) {
   return {
     id: sampleResults[0].id,
     client_id: sampleResults[0].cliente_id,
-    panel_type_id: sampleResults[0].tipo_painel_id,
     date: sample.data,
   };
 }
 
-async function registerNewSample(client_id, panel_type_id) {
+async function registerNewSample(client_id) {
   const now = time.getFormattedNow();
-  const newSample = await pg.query('INSERT INTO coleta (cliente_id, tipo_painel_id, data) VALUES ($1, $2, $3) RETURNING *',
-    [client_id, panel_type_id, now], 'user');
+  const newSample = await pg.query('INSERT INTO coleta (cliente_id, data) VALUES ($1, $2) RETURNING *',
+    [client_id, now], 'user');
 
   return newSample.rows[0];
 }

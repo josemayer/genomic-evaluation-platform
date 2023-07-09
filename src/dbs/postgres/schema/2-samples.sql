@@ -70,36 +70,37 @@ VALUES
 
 ALTER SEQUENCE tipo_painel_id_seq RESTART WITH 13;
 
-INSERT INTO coleta (id, cliente_id, tipo_painel_id, data)
+INSERT INTO coleta (id, cliente_id, data)
 VALUES
-  (1, 1, 1, '2023-06-07 08:12:33'),
-  (2, 2, 1, '2023-06-07 08:12:33'),
-  (3, 6, 3, '2023-06-09 13:21:49'),
-  (4, 8, 9, '2023-06-10 09:10:12'),
-  (5, 9, 2, '2023-06-01 14:01:10');
+  (1, 1, '2023-06-07 08:12:33'),
+  (2, 2, '2023-06-07 08:12:33'),
+  (3, 6, '2023-06-09 13:21:49'),
+  (4, 8, '2023-06-10 09:10:12'),
+  (5, 9, '2023-06-01 14:01:10');
 
 ALTER SEQUENCE coleta_id_seq RESTART WITH 6;
 
-INSERT INTO exame (id, coleta_id, tempo_estimado)
+INSERT INTO exame (id, coleta_id, tipo_painel_id, tempo_estimado)
 VALUES
-  (1, 1, INTERVAL '15 days'),
-  (2, 5, INTERVAL '15 days'),
-  (3, 4, INTERVAL '6 days');
+  (1, 1, 1, INTERVAL '15 days'),
+  (2, 5, 3, INTERVAL '15 days'),
+  (3, 4, 4, INTERVAL '6 days');
 
 ALTER SEQUENCE exame_id_seq RESTART WITH 4;
 
 INSERT INTO andamento_exame (usuario_id, exame_id, data, estado_do_exame)
 VALUES
   (3, 1, '2023-06-13 14:56:45', 'na fila'),
-  (3, 1, '2023-06-14 09:32:00', 'processando'),
+  (3, 1, '2023-06-14 09:32:00', 'processado'),
   (7, 2, '2023-06-18 10:00:00', 'completo'),
   (4, 3, '2023-06-10 12:02:00', 'na fila'),
-  (4, 3, '2023-06-10 15:23:42', 'inválido');
+  (3, 3, '2023-06-10 14:10:35', 'processado'),
+  (7, 3, '2023-06-10 15:23:42', 'invalidado');
 
-INSERT INTO painel (exame_id, tipo_painel_id, sequencia_de_codigo_genetico)
+INSERT INTO painel (exame_id, sequencia_de_codigo_genetico)
 VALUES
-  (1, 1, 'AGCTGCTAGCGTACGTATGCGTATCGTGCATGCTA'),
-  (2, 2, 'GCTAGCTAGTACGTCATCAGCGTACAGTGATCGCA');
+  (1, 'AGCTGCTAGCGTACGTATGCGTATCGTGCATGCTA'),
+  (2, 'GCTAGCTAGTACGTCATCAGCGTACAGTGATCGCA');
 
 INSERT INTO condicao (id, descricao, nome, prob_populacao)
 VALUES
@@ -119,10 +120,10 @@ VALUES
   (2, 'AGCTAGCTA', 0.5, 0.5),
   (3, 'GCTAGCTAG', 0.02, 0.3);
 
-INSERT INTO identifica_condicao (exame_id, tipo_painel_id, condicao_id)
+INSERT INTO identifica_condicao (exame_id, condicao_id)
 VALUES
-  (2, 2, 1),
-  (2, 2, 3);
+  (2, 1),
+  (2, 3);
 
 INSERT INTO pode_identificar_condicao (tipo_painel_id, condicao_id)
 VALUES
