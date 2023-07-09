@@ -1,5 +1,8 @@
 const pg = require('../config/postgres');
 const redisService = require('../services/redis');
+const notifications = require('../services/notifications');
+const permissions = require('../helpers/permissions');
+const time = require('../helpers/time');
 
 async function getAllExams() {
   const exams = await pg.query('SELECT * FROM exame');
@@ -98,18 +101,6 @@ async function stepExam(user, body, type) {
     return null;
 }
 
-function formatDate(date) {
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
-  const seconds = date.getSeconds();
-
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-}
-
 async function estimateTime() {
   const exams = await getAllExams();
 
@@ -131,11 +122,11 @@ async function estimateTime() {
 }
 
 async function putExamInQueue(sample_id, user) {
-  if (!user.types.includes('cliente'))
+  if (!permissions.hasType(user.types, 'cliente'))
     throw new Error('Only clients can enqueue exams');
 
   try {
-    const formatted_date = formatDate(new Date());
+    const formatted_date = time.getFormattedNow();
 
     await pg.query("BEGIN");
 
@@ -148,8 +139,7 @@ async function putExamInQueue(sample_id, user) {
       [exame_id, user.id, 'na fila', formatted_date]);
 
     const notification_text = `O seu exame ${exame_id} foi criado, está na fila e será processado em breve!`;
-    const notification = await pg.query('INSERT INTO notificacao (usuario_id, texto, data) VALUES ($1, $2, $3) RETURNING *',
-      [user.id, notification_text, formatted_date]);
+    await notifications.sendNotification(user.id, notification_text);
 
     await pg.query("COMMIT");
 
@@ -162,7 +152,7 @@ async function putExamInQueue(sample_id, user) {
 }
 
 async function processExam(id, user, genes) {
-  if (!user.types.includes('laboratorista'))
+  if (!permissions.hasType(user.types, 'laboratorista'))
     throw new Error('Only laboratory technicians can process exams');
 
   const user_id = parseInt(user.id);
@@ -173,7 +163,7 @@ async function processExam(id, user, genes) {
 }
 
 async function validateExam(id, user) {
-  if (!user.types.includes('medico'))
+  if (!permissions.hasType(user.types, 'medico'))
     throw new Error('Only doctors can validate exams');
 
   // pass
@@ -181,9 +171,9 @@ async function validateExam(id, user) {
 }
 
 async function getConditionsOfExam(user, id) {
-  if (!user.types.includes('laboratorista') && !user.types.includes('medico'))
+  if (!permissions.hasType(user.types, 'laboratorista') && !permissions.hasType(user.types, 'medico'))
     throw new Error('Only laboratory technicians can get conditions of exams');
-  // TODO(luatil): UNDO This id change 
+  // TODO(luatil): UNDO This id change
   id = 4;
   const conditions = await pg.query('select * from pode_identificar_condicao pc inner join condicao on pc.condicao_id = condicao.id where pc.condicao_id = $1', [id])
 
