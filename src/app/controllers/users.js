@@ -1,5 +1,6 @@
 const users = require('../services/users');
 const auth = require('../services/auth');
+const structures = require('../helpers/structures');
 
 async function listClients(req, res, next) {
   try {
@@ -36,7 +37,7 @@ async function clientInfo(req, res, next) {
     let client = await users.getClientById(id);
     let total = 1;
 
-    if (!client || isEmptyObj(client) || client.length == 0) {
+    if (!client || structures.isEmptyObj(client) || client.length == 0) {
       res.status(404);
       res.json({
         message: 'Not found',
@@ -44,7 +45,7 @@ async function clientInfo(req, res, next) {
       return res;
     }
 
-    if (isArray(client)) {
+    if (structures.isArray(client)) {
       client = client[0];
     }
 
@@ -62,14 +63,6 @@ async function clientInfo(req, res, next) {
     });
   }
   return res;
-}
-
-function isArray(obj) {
-  return Array.isArray(obj);
-}
-
-function isEmptyObj(obj) {
-  return Object.keys(obj).length === 0;
 }
 
 async function registerClient(req, res, next) {
