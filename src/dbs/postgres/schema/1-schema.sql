@@ -165,12 +165,13 @@ CREATE TABLE identifica_condicao (
 );
 
 CREATE TABLE pode_identificar_condicao (
-    tipo_de_painel_id  BIGINT,
+    tipo_painel_id  BIGINT,
     condicao_id        BIGINT,
 
-    CONSTRAINT pode_identificar_condicao_tipo_painel_fk FOREIGN KEY (tipo_de_painel_id)
+    CONSTRAINT pode_identificar_condicao_tipo_painel_fk FOREIGN KEY (tipo_painel_id)
       REFERENCES tipo_painel (id) ON DELETE CASCADE,
     CONSTRAINT pode_identificar_condicao_condicao_fk FOREIGN KEY (condicao_id)
+      REFERENCES condicao (id)
 );
 
 --- Client view and triggers
