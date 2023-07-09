@@ -59,6 +59,8 @@ async function insertClient(clientData) {
 
 async function login(mail, password) {
   try {
+    pg.query('BEGIN');
+
     const query = 'SELECT * FROM usuario WHERE email = $1';
     const result = await pg.query(query, [mail]);
 
@@ -76,8 +78,11 @@ async function login(mail, password) {
       types: userSpecializations,
     }
 
+    pg.query('COMMIT');
+
     return auth.createToken(userData);
   } catch (err) {
+    pg.query('ROLLBACK');
     throw err;
   }
 }
