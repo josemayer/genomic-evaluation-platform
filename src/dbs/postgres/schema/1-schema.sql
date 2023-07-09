@@ -242,3 +242,13 @@ FOR EACH ROW EXECUTE PROCEDURE functionDeleteCliente();
 CREATE TRIGGER triggerUpdateCliente
 INSTEAD OF UPDATE ON ClienteView
 FOR EACH ROW EXECUTE PROCEDURE functionUpdateCliente();
+
+--- Authorization of users
+
+CREATE USER usuario WITH PASSWORD 'userpass';
+CREATE USER system WITH PASSWORD 'syspass';
+
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO usuario;
+GRANT INSERT, UPDATE ON ClienteView, coleta, exame, andamento_exame TO usuario;
+
+GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA public TO system;
