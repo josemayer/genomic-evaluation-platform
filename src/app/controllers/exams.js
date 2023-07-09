@@ -95,7 +95,7 @@ async function stepExam(req, res) {
   }
 
   try {
-    const user = await auth.decodeToken(auth_header);
+    const user = auth.decodeToken(auth_header);
     const step_result = await exams.stepExam(user.userData, body, type);
 
     res.status(200);
@@ -122,7 +122,7 @@ async function identifyExam(req, res) {
   }
 
   try {
-    const user = await auth.decodeToken(auth_header);
+    const user = auth.decodeToken(auth_header);
     const conditions = await exams.getConditionsOfExam(user.userData, id);
 
     res.status(200);

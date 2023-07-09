@@ -15,7 +15,7 @@ async function listUserSamples(req, res) {
   }
 
   try {
-    const user = await auth.decodeToken(auth_header);
+    const user = auth.decodeToken(auth_header);
     const userSamples = await samples.getSamplesOfClient(user.userData.id);
 
     res.status(200);
@@ -40,7 +40,7 @@ async function createSample(req, res) {
   }
 
   try {
-    const user = await auth.decodeToken(auth_header);
+    const user = auth.decodeToken(auth_header);
 
     if (!body.panel_type_id || !body.user_id) {
       res.status(400);
