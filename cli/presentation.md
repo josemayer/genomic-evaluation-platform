@@ -1,6 +1,6 @@
 # Apresentação
 
-## Apresentação das BDS 
+## Apresentação das BDS
 
 Falar um pouco sobre como as bds foram utilizadas
 
@@ -19,21 +19,21 @@ Logar com 3 terminais diferentes
 
 ----------------------------------------------------------------------------------
 
-[LAB] > Entre o seu email: alice.johnson@exemplo.com  
-[LAB] > Entre a sua senha: qwerty 
+[LAB] > Entre o seu email: alice.johnson@exemplo.com
+[LAB] > Entre a sua senha: qwerty
 
 ----------------------------------------------------------------------------------
 
-[MED] > Entre o seu email: sarah.thompson@exemplo.com 
-[MED] > Entre a sua senha: password456 
+[MED] > Entre o seu email: sarah.thompson@exemplo.com
+[MED] > Entre a sua senha: password456
 
 ----------------------------------------------------------------------------------
 
 [CLI] > ajuda
-    
+
     mostrar todos os comandos. Permissoes. (idealmente so as que o usuario tem)
 
-[CLI] > registrar-coleta 
+[CLI] > registrar-coleta
 
     equivalente a mandar a coleta por sedex
     => retorna o id da coleta
@@ -42,7 +42,7 @@ Logar com 3 terminais diferentes
 
     (1, 'Sequenciamento de Exoma Completo (WES)'),
         - Cancer
-        - ... 
+        - ...
     (2, 'Sequenciamento de Genoma Completo (WGS)'),
         - 'bromidrose plantar'
         - ...
@@ -51,7 +51,7 @@ Logar com 3 terminais diferentes
 [CLI] > pedir-exame <id-do-tipo-do-panel> <id-da-coleta>
 
     Você pediu um exame com sucesso.
-    ID do exame: 3 
+    ID do exame: 3
     Tempo estimado: 3 dias
 
 ----------------------------------------------------------------------------------
@@ -59,13 +59,13 @@ Logar com 3 terminais diferentes
 [LAB] > pendencias
 
     Existem <n> exames pendentes:
-    
+
     [id-do-exame] [id-do-usuario]
     [id-do-exame] [id-do-usuario]
     ...
 
 [LAB] > fazer-exame <id-do-exame> <nome-da-pessoa-world>
-     
+
     Exame realizado.
 
 
@@ -78,20 +78,15 @@ Logar com 3 terminais diferentes
     [id-do-exame] [id-do-usuario]
     [id-do-exame] [id-do-usuario]
     ...
-    
+
 [MED] > avalia-exame <id-do-exame>
 
     O Exame identificou as seguintes condicoes:
 
     Bromidrose plantar: 0.5
     Câncer de pulmão: 0.1
-    
-    O exame também identificou as seguintes relações de parentesco:
 
-    [pai] Vasily 
-    [mae] Ekaterina
-
-    => 1/2 (agendar consulta) | (enviar diretamente) 
+    => 1/2 (agendar consulta) | (enviar diretamente)
 
     => Escolher o (1)
 
@@ -99,11 +94,11 @@ Logar com 3 terminais diferentes
 
 [CLI] > notificacao
 
-    [data] Você tem uma consulta agendada 
+    [data] Você tem uma consulta agendada
 
 [CLI] > mostrar-arvore
 
-    [pai] Vasily 
+    [pai] Vasily
     [mae] Ekaterina
 
 [CLI] > mostrar-condicoes
