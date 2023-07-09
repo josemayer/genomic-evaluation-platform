@@ -89,7 +89,7 @@ def login(email, password):
 
 
 def notifications():
-    notifications_internal = ["Voce tem que fazer o teste do joao", "Voce tem que fazer o teste do pedro"]
+    notifications_internal = make_get_request_with_token('/notifications')
     for notification in notifications_internal:
         print(notification)
 
