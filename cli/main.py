@@ -164,6 +164,19 @@ def register_sample(panel_type_id, user_id):
   print("Coleta registrada com sucesso!")
   print(req["sample"])
 
+def view_samples():
+  req = make_get_request_with_token('/samples')
+
+  if not "userSamples" in req:
+    print("Erro ao listar coletas:")
+    print(req["message"])
+    return None
+
+  print("Coletas:")
+  for sample in req["userSamples"]:
+    print(json.dumps(sample, indent=4, sort_keys=True))
+
+
 def ask_for_exam(sample_id):
     req = make_post_request_with_token('/exams/step/enqueue', {'sample_id': sample_id})
 
@@ -254,6 +267,11 @@ def main():
           panel_type_id = tokens[1]
           user_id = tokens[2]
           register_sample(panel_type_id, user_id)
+        elif tokens[0] == "ver-coletas":
+          if len(tokens) != 1:
+            print("Comando invalido: ver-coletas não possui argumentos")
+            continue
+          view_samples()
         else:
             print("Comando invalido")
 
