@@ -52,6 +52,7 @@ def make_post_request_with_token(url, payload):
     data = json.loads(data)
     return data
 
+
 def make_get_request_with_token(url):
     global global_token
 
@@ -93,6 +94,7 @@ def notifications():
     for notification in notifications_internal:
         print(notification)
 
+
 def verifiy_exam(exam_id):
     print(f"Verificando o exame {exam_id}")
     summary = "Identifiquei:"
@@ -126,8 +128,6 @@ def verifiy_exam(exam_id):
 
 
 def do_exam(exam_id, world_name):
-    # request server for what conditions this exam can identify
-#    conditions_to_find = ["asma", "chule"]
 
     req = make_get_request_with_token(f"/exams/identify/{exam_id}")
 
@@ -153,28 +153,30 @@ def do_exam(exam_id, world_name):
 
     print(print_string)
 
+
 def register_sample(panel_type_id, user_id):
-  req = make_post_request_with_token('/samples/new', {'panel_type_id': panel_type_id, 'user_id': user_id})
+    req = make_post_request_with_token('/samples/new', {'panel_type_id': panel_type_id, 'user_id': user_id})
 
-  if not "sample" in req:
-    print("Erro ao registrar coleta:")
-    print(req["message"])
-    return None
+    if "sample" not in req:
+        print("Erro ao registrar coleta:")
+        print(req["message"])
+        return None
 
-  print("Coleta registrada com sucesso!")
-  print(req["sample"])
+    print("Coleta registrada com sucesso!")
+    print(req["sample"])
+
 
 def view_samples():
-  req = make_get_request_with_token('/samples')
+    req = make_get_request_with_token('/samples')
 
-  if not "userSamples" in req:
-    print("Erro ao listar coletas:")
-    print(req["message"])
-    return None
+    if "userSamples" not in req:
+        print("Erro ao listar coletas:")
+        print(req["message"])
+        return None
 
-  print("Coletas:")
-  for sample in req["userSamples"]:
-    print(json.dumps(sample, indent=4, sort_keys=True))
+    print("Coletas:")
+    for sample in req["userSamples"]:
+        print(json.dumps(sample, indent=4, sort_keys=True))
 
 
 def ask_for_exam(sample_id):
@@ -191,26 +193,6 @@ def ask_for_exam(sample_id):
     """
 
     print(print_string)
-
-    # print(f"Voc{sample_id}")
-    # summary = "Identifiquei:"
-    #
-    # conditions = [
-    #     ["chule", "0.8"],
-    #     ["asma", "0.1"],
-    #     ["astigmatismo", "0.7"],
-    #     ["cancer_de_pulmao", "0.001"]
-    # ]
-    #
-    # relations = [
-    #     ["Pai", "Joao"],
-    #     ["Mae", "Maria"],
-    #     ["Filho", "Joao Vinicius"],
-    # ]
-    #
-    # res = summary + '\nCONDICOES\n' + "\n".join([": ".join(cond) for cond in conditions]) + "\nRELACOES\n" + "\n".join(
-    #     [": ".join(rel) for rel in relations])
-    # print(res)
 
 
 def main():
@@ -261,17 +243,17 @@ def main():
             exam_id = tokens[1]
             verifiy_exam(exam_id)
         elif tokens[0] == "registrar-coleta":
-          if len(tokens) != 3:
-            print("Comando invalido: registrar-coleta <id_tipo_painel> <id_usuario>")
-            continue
-          panel_type_id = tokens[1]
-          user_id = tokens[2]
-          register_sample(panel_type_id, user_id)
+            if len(tokens) != 3:
+                print("Comando invalido: registrar-coleta <id_tipo_painel> <id_usuario>")
+                continue
+            panel_type_id = tokens[1]
+            user_id = tokens[2]
+            register_sample(panel_type_id, user_id)
         elif tokens[0] == "ver-coletas":
-          if len(tokens) != 1:
-            print("Comando invalido: ver-coletas não possui argumentos")
-            continue
-          view_samples()
+            if len(tokens) != 1:
+                print("Comando invalido: ver-coletas não possui argumentos")
+                continue
+            view_samples()
         else:
             print("Comando invalido")
 
