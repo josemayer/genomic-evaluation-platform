@@ -31,10 +31,10 @@ async function getSampleById(sample_id) {
 
 async function registerNewSample(client_id, panel_type_id) {
   const now = time.getFormattedNow();
-  const newSample = await pg.query('INSERT INTO coleta (cliente_id, tipo_painel_id, data) VALUES ($1, $2, $3)',
+  const newSample = await pg.query('INSERT INTO coleta (cliente_id, tipo_painel_id, data) VALUES ($1, $2, $3) RETURNING *',
     [client_id, panel_type_id, now]);
 
-  return newSample;
+  return newSample.rows[0];
 }
 
 module.exports = {
