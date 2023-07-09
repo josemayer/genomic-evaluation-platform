@@ -153,6 +153,16 @@ def do_exam(exam_id, world_name):
 
     print(print_string)
 
+def register_sample(panel_type_id, user_id):
+  req = make_post_request_with_token('/samples/new', {'panel_type_id': panel_type_id, 'user_id': user_id})
+
+  if not "sample" in req:
+    print("Erro ao registrar coleta:")
+    print(req["message"])
+    return None
+
+  print("Coleta registrada com sucesso!")
+  print(req["sample"])
 
 def ask_for_exam(sample_id):
     req = make_post_request_with_token('/exams/step/enqueue', {'sample_id': sample_id})
@@ -237,6 +247,13 @@ def main():
                 continue
             exam_id = tokens[1]
             verifiy_exam(exam_id)
+        elif tokens[0] == "registrar-coleta":
+          if len(tokens) != 3:
+            print("Comando invalido: registrar-coleta <id_tipo_painel> <id_usuario>")
+            continue
+          panel_type_id = tokens[1]
+          user_id = tokens[2]
+          register_sample(panel_type_id, user_id)
         else:
             print("Comando invalido")
 
