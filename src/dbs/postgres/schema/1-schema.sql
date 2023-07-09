@@ -164,6 +164,16 @@ CREATE TABLE identifica_condicao (
     CONSTRAINT identifica_conexao_pk PRIMARY KEY (exame_id, tipo_painel_id, condicao_id)
 );
 
+CREATE TABLE pode_identificar_condicao (
+    tipo_painel_id  BIGINT,
+    condicao_id        BIGINT,
+
+    CONSTRAINT pode_identificar_condicao_tipo_painel_fk FOREIGN KEY (tipo_painel_id)
+      REFERENCES tipo_painel (id) ON DELETE CASCADE,
+    CONSTRAINT pode_identificar_condicao_condicao_fk FOREIGN KEY (condicao_id)
+      REFERENCES condicao (id)
+);
+
 --- Client view and triggers
 
 DROP VIEW IF EXISTS ClienteView CASCADE;

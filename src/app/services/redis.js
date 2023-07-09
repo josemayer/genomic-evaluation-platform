@@ -1,8 +1,10 @@
 const { client, url } = require('../config/redis');
 const { redisUserSchema, redisConditionSchema, redisSequenceProbsSchema } = require('../../dbs/redis/schema/1-redisSchemas');
 
-/** 
- * @param {{sequence: string, probabilityInPopulation: number, probabilityGivenSequence: number}[]} sequencesWithProbs 
+/**
+ * @param id
+ * @param probability
+ * @param {{sequence: string, probabilityInPopulation: number, probabilityGivenSequence: number}[]} sequencesWithProbs
  */
 async function addCondition(id, probability, sequencesWithProbs) {
   await client.open(url);
@@ -34,15 +36,23 @@ async function addCondition(id, probability, sequencesWithProbs) {
   return result;
 }
 
-async function addUser(id, sequences) {
+/**
+ * @param {number} id
+ * @param {number[]} sequences
+ * @returns {Promise<any>}
+ */
+async function addGenesToUser(id, sequences) {
   await client.open(url);
   const userRepository = client.fetchRepository(redisUserSchema);
   await userRepository.createIndex();
 
-  let result = 'Failed';
+  let result;
   const search = await userRepository.search().where('id').equals(id).returnFirst();
   if (search) {
-    result = `User with id ${id} already exists`;
+    const codes = search.genetic_codes;
+    search.genetic_codes = Array.from(new Set(codes.concat(sequences)));
+
+    result = await userRepository.save(search);
   } else {
     result = await userRepository.createAndSave({ id: id, genetic_codes: sequences });
   }
@@ -134,7 +144,7 @@ function bayesianUpdate(probA, probB, probB_A) {
 
 
 module.exports = {
-  addUser,
+  addGenesToUser,
   addCondition,
   searchAllUsers,
   findUserConditions
