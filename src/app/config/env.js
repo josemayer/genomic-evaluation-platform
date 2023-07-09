@@ -14,9 +14,21 @@ const environment = {
     postgres: {
       host: env.POSTGRES_HOST || 'postgres',
       port: env.POSTGRES_PORT || 5432,
-      user: env.POSTGRES_USER || 'postgres',
-      password: env.POSTGRES_PASSWORD || 'postgres',
       database: env.POSTGRES_DB || 'postgres',
+      users: {
+        postgres: {
+          user: env.POSTGRES_ROOT_USER || 'postgres',
+          password: env.POSTGRES_ROOT_PASSWORD || 'postgres',
+        },
+        user: {
+          user: env.POSTGRES_USER_USER || 'usuario',
+          password: env.POSTGRES_USER_PASSWORD || 'userpass',
+        },
+        system: {
+          user: env.POSTGRES_SYSTEM_USER || 'system',
+          password: env.POSTGRES_SYSTEM_PASSWORD || 'syspass',
+        },
+      }
     },
     redis: {
       url: `redis://${env.REDIS_USERNAME || 'default'}:${env.REDIS_PASSWORD || ''}@${env.REDIS_HOST || 'redis'}:${env.REDIS_PORT || '6379'}`
