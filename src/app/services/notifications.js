@@ -1,5 +1,6 @@
 const pg = require('../config/postgres');
 const time = require('../helpers/time.js');
+const permissions = require('../helpers/permissions.js');
 
 async function sendNotification (user_id, notification_text) {
   const now = time.getFormattedNow();
@@ -35,7 +36,36 @@ async function readAllNotifications () {
   `, [], 'system');
 }
 
+async function getToDos(userTypes) {
+  let res = []
+  if (permissions.hasType(userTypes, 'laboratorista')) {
+    const query = await pg.query('SELECT exame_id FROM EstadoExameView WHERE estado_do_exame = \'na fila\'')
+    let num = parseInt(query.rowCount)
+
+    if (num > 0) {
+      res.push(`Existe${num==1?'':'m'} ${num} exames na fila de execução`);
+      for (let i = 0; i < num; i++) {
+      	res.push(`  - ${query.rows[i].exame_id}`)
+      }
+    }
+  }
+
+  if (permissions.hasType(userTypes, 'medico')) {
+    const query = await pg.query('SELECT exame_id FROM EstadoExameView WHERE estado_do_exame = \'processado\'')
+    let num = parseInt(query.rowCount)
+
+    if (num > 0) {
+      res.push(`Existe${num==1?'':'m'} ${num} exames na fila de avaliação`);
+      for (let i = 0; i < num; i++) {
+      	res.push(`  - ${query.rows[i].exame_id}`)
+      }
+    }
+  }
+  return res;
+}
+
 module.exports = {
   sendNotification,
-  getNotifications
+  getNotifications,
+  getToDos,
 };

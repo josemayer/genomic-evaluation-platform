@@ -124,6 +124,11 @@ def notifications():
     for notification in notifications_internal:
         print(notification)
 
+def todos():
+    notifications_internal = make_get_request_with_token('/notifications/todos')
+    for notification in notifications_internal:
+        print(notification)
+
 
 def verifiy_exam(exam_id):
     print(f"Verificando o exame {exam_id}")
@@ -266,6 +271,8 @@ def main():
             print(os.getcwd())
         elif tokens[0] == "notificacoes":
             notifications()
+        elif tokens[0] == "pendencias":
+            todos()
         elif tokens[0] == "pedir-exame":
             if len(tokens) != 3:
                 print("Comando invalido: pedir-exame <id_amostra> <id_painel>")
