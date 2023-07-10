@@ -29,9 +29,11 @@ Logar com 3 terminais diferentes
 
 ----------------------------------------------------------------------------------
 
-[CLI] > ajuda
+[LAB] > ajuda
 
     mostrar todos os comandos. Permissoes. (idealmente so as que o usuario tem)
+
+[LAB] > adicionar-condicao 
 
 [CLI] > registrar-coleta
 

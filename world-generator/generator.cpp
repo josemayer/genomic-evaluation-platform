@@ -130,10 +130,12 @@ int newCondition(argList args) {
 
 	float diseaseProbability = getRandomInRange(0.01, 0.3);
 	file << genes.size() << ' ' << diseaseProbability << std::endl;
+    std::cout << genes.size() << ' ' << diseaseProbability << std::endl;
 	for (auto gene : genes) {
 		float p1 = getRandomZeroToOne();
 		float p2 = getRandomZeroToOne();
 		file << gene << ' ' << p1 << ' ' << p2 << std::endl;
+        std::cout << gene << ' ' << p1 << ' ' << p2 << std::endl;
 	}
 
 	return 0;
