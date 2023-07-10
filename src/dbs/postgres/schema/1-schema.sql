@@ -247,7 +247,7 @@ CREATE USER usuario WITH PASSWORD 'userpass';
 CREATE USER system WITH PASSWORD 'syspass';
 
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO usuario;
-GRANT INSERT, UPDATE ON ClienteView, coleta, exame, andamento_exame, pode_identificar_condicao, tipo_painel TO usuario;
+GRANT INSERT, UPDATE ON ClienteView, coleta, exame, andamento_exame, pode_identificar_condicao, tipo_painel, condicao, condicao_sequencia_dna TO usuario;
 GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO usuario;
 
 GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA public TO system;

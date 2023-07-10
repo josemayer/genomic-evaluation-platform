@@ -11,6 +11,36 @@ GENERATOR = "./generator"
 
 global_token = ""
 
+def add_condition(condition_name):
+    condition_description = input("Digite a descricao da condicao: ")
+
+    data = subprocess.check_output([GENERATOR, "new_condition", condition_name])
+    data = data.decode('utf-8')
+    data = data.split('\n')
+
+    linenum, prob = data[0].split(' ')
+    lines = [el.split(' ') for el in data[1:] if len(el) > 1]
+    genetic_information = [{"sequence": el[0], "probabilityInPopulation": el[1], "probabilityGivenSequence": el[2]} for el in lines]
+
+    payload = {
+        "description": condition_description,
+        "condition_name": condition_name,
+        "prob_pop": prob,
+        "genetic_information": genetic_information
+    }
+
+    req = make_post_request_with_token('/conditions/add', payload)
+
+    if "message" in req:
+        print(req)
+        return None
+
+    print_string = f"""
+        Adicionando a nova condicao.
+    """
+
+    print(print_string)
+
 
 def get_token(mail, password):
     conn = http.client.HTTPConnection(ADDRESS, PORT)
@@ -277,6 +307,12 @@ def main():
             conditions = [int(x) for x in " ".join(tokens[1:]).split("'")[2::2][0].split(" ") if x != ""]
 
             register_panel_type_with_conditions(panel_type_desc, conditions)
+        elif tokens[0] == "adicionar-condicao":
+            if len(tokens) != 2:
+                print("Comand invalido: adicionar-condicao <nome-condicao>")
+                continue
+            condition_name = tokens[1]
+            add_condition(condition_name)
         else:
             print("Comando invalido")
 

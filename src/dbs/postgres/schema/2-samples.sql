@@ -109,7 +109,7 @@ VALUES
   (3, 'Doença crônica genética caracterizada pela produção de muco espesso e pegajoso. Esse muco é capaz de bloquear as vias aéreas.', 'Fibrose cística', 0.00034),
   (4, 'Doença possivelmente terminal de câncer de pulmão', 'câncer de pulmão', 0.03);
 
-ALTER SEQUENCE condicao_id_seq RESTART WITH 4;
+ALTER SEQUENCE condicao_id_seq RESTART WITH 5;
 
 INSERT INTO condicao_sequencia_dna (condicao_id, sequencia_dna, prob_seq, prob_seq_dado_cond)
 VALUES
