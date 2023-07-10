@@ -87,14 +87,12 @@ describe('exams service', () => {
           {
             id: 1,
             cliente_id: 100,
-            tipo_painel_id: 5,
             data: '2023-06-01 00:00:00',
           },
         ];
         const expectedResult = {
           id: mockRows[0].id,
           client_id: mockRows[0].cliente_id,
-          panel_type_id: mockRows[0].tipo_painel_id,
           date: mockRows[0].data,
         };
         pg.query.mockResolvedValueOnce({ rows: mockRows });
