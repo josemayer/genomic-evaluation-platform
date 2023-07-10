@@ -17,7 +17,7 @@ async function addCondition(id, probability, sequencesWithProbs) {
     result = `Condition with id ${id} already exists`;
   } else {
     result = {};
-    result['condition'] = await conditionRepository.createAndSave({ id: id, probabilityInPopulation: probability, sequences: sequencesWithProbs.map((el) => el.sequence) });
+    result['condition'] = await conditionRepository.createAndSave({ id: id, probabilityInPopulation: parseFloat(probability), sequences: sequencesWithProbs.map((el) => el.sequence) });
     result['sequenceProbs'] = [];
     const sequenceProbsRepository = client.fetchRepository(redisSequenceProbsSchema);
     await sequenceProbsRepository.createIndex();
@@ -25,8 +25,8 @@ async function addCondition(id, probability, sequencesWithProbs) {
       const tmp = await sequenceProbsRepository.createAndSave({
         conditionId: id,
         sequence: sequencesWithProbs[i].sequence,
-        probabilityInPopulation: sequencesWithProbs[i].probabilityInPopulation,
-        probabilityGivenCondition: sequencesWithProbs[i].probabilityGivenSequence
+        probabilityInPopulation: parseFloat(sequencesWithProbs[i].probabilityInPopulation),
+        probabilityGivenCondition: parseFloat(sequencesWithProbs[i].probabilityGivenSequence)
       });
       result['sequenceProbs'].push(tmp);
     }

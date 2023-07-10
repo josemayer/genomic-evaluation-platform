@@ -9,7 +9,7 @@ async function addCondition(description, condition_name, prob_pop, genetic_infor
     
     const condition_id = parseInt(conditionResult.rows[0].id);
     
-    redisService.addCondition(condition_id, prob_pop, genetic_information);
+    redisService.addCondition(condition_id, parseFloat(prob_pop), genetic_information);
 
     let query = 'INSERT INTO condicao_sequencia_dna (condicao_id, sequencia_dna, prob_seq, prob_seq_dado_cond) VALUES ';
     
@@ -29,7 +29,7 @@ async function addCondition(description, condition_name, prob_pop, genetic_infor
 }
 
 function format(conditionId, genetic_information) {
-    return `(${conditionId}, '${genetic_information.sequence}', ${genetic_information.probabilityInPopulation}, ${genetic_information.probabilityGivenSequence})`;
+    return `(${parseInt(conditionId)}, '${genetic_information.sequence}', ${parseFloat(genetic_information.probabilityInPopulation)}, ${parseFloat(genetic_information.probabilityGivenSequence)})`;
 }
 
 module.exports = {
