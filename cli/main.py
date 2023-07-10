@@ -301,11 +301,10 @@ def main():
             verifiy_exam(exam_id)
         elif tokens[0] == "registrar-coleta":
             if len(tokens) != 3:
-                print("Comando invalido: registrar-coleta <id_tipo_painel> <id_usuario>")
+                print("Comando invalido: registrar-coleta <id_usuario>")
                 continue
-            panel_type_id = tokens[1]
-            user_id = tokens[2]
-            register_sample(panel_type_id, user_id)
+            user_id = tokens[1]
+            register_sample(user_id)
         elif tokens[0] == "ver-coletas":
             if len(tokens) != 1:
                 print("Comando invalido: ver-coletas não possui argumentos")
