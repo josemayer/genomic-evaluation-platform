@@ -196,6 +196,17 @@ def ask_for_exam(sample_id, panel_type_id):
 
     print(print_string)
 
+def register_panel_type_with_conditions(panel_type_desc, conditions):
+  req = make_post_request_with_token('/panels/types/new', {'description': panel_type_desc, 'conditions_id_list': conditions})
+
+  if not "panel" in req:
+    print("Erro ao registrar painel:")
+    print(req["message"])
+    return None
+
+  print("Painel registrado com sucesso!")
+  print(req["panel"])
+
 
 def main():
     logged = False
@@ -257,6 +268,15 @@ def main():
                 print("Comando invalido: ver-coletas não possui argumentos")
                 continue
             view_samples()
+        elif tokens[0] == "registrar-tipo-de-painel":
+            if len(tokens) < 3:
+                print("Comando invalido: registrar-tipo-de-painel '<descricao>' <id_condicao> ... <id_condicao>")
+                continue
+
+            panel_type_desc = " ".join(tokens[1:]).split("'")[1::2][0]
+            conditions = [int(x) for x in " ".join(tokens[1:]).split("'")[2::2][0].split(" ") if x != ""]
+
+            register_panel_type_with_conditions(panel_type_desc, conditions)
         else:
             print("Comando invalido")
 
