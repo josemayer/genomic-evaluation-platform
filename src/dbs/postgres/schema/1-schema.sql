@@ -163,8 +163,8 @@ CREATE TABLE identifica_condicao (
 );
 
 CREATE TABLE pode_identificar_condicao (
-    tipo_painel_id  BIGINT,
-    condicao_id        BIGINT,
+    tipo_painel_id  BIGSERIAL,
+    condicao_id     BIGINT,
 
     CONSTRAINT pode_identificar_condicao_tipo_painel_fk FOREIGN KEY (tipo_painel_id)
       REFERENCES tipo_painel (id) ON DELETE CASCADE,
@@ -247,7 +247,7 @@ CREATE USER usuario WITH PASSWORD 'userpass';
 CREATE USER system WITH PASSWORD 'syspass';
 
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO usuario;
-GRANT INSERT, UPDATE ON ClienteView, coleta, exame, andamento_exame TO usuario;
+GRANT INSERT, UPDATE ON ClienteView, coleta, exame, andamento_exame, pode_identificar_condicao, tipo_painel TO usuario;
 GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO usuario;
 
 GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA public TO system;
