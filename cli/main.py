@@ -242,6 +242,12 @@ def register_panel_type_with_conditions(panel_type_desc, conditions):
   print("Painel registrado com sucesso!")
   print(req["panel"])
 
+def list_panel_types():
+    req = make_get_request_with_token('/panels/types/list')
+    for pt in req:
+        print(f"{pt['id']} {pt['descricao']}")
+        for c in pt['conditions']:
+            print(f"  - {c['condicao_id']} {c['nome']}")
 
 def main():
     logged = False
@@ -320,6 +326,8 @@ def main():
                 continue
             condition_name = tokens[1]
             add_condition(condition_name)
+        elif tokens[0] == "listar-tipos-de-painel":
+            list_panel_types()
         else:
             print("Comando invalido")
 
