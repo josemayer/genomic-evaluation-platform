@@ -54,6 +54,12 @@ async function registerPanelWithConditions(req, res) {
   return res;
 }
 
+async function listAllPanelsTypes(req, res) {
+  res.status(200);
+  res.json(await panels.listAllPanelTypes())
+}
+
 module.exports = {
   registerPanelWithConditions,
+  listAllPanelsTypes,
 };
