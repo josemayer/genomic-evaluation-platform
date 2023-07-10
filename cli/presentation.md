@@ -33,7 +33,7 @@ Logar com 3 terminais diferentes
 
     mostrar todos os comandos. Permissoes. (idealmente so as que o usuario tem)
 
-[LAB] > adicionar-condicao 
+[LAB] > adicionar-condicao
 
 [CLI] > registrar-coleta
 
