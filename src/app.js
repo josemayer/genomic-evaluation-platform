@@ -8,6 +8,7 @@ const samplesRoute = require('./app/routes/samples');
 const notificationsRoute = require('./app/routes/notifications');
 const usersRoute = require('./app/routes/users');
 const neo4jRoute = require('./app/routes/neo4j.js');
+const conditionsRoutes = require('./app/routes/conditions');
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use('/samples', samplesRoute);
 app.use('/notifications', notificationsRoute);
 app.use('/users', usersRoute);
 app.use('/neo4j', neo4jRoute);
+app.use('/conditions', conditionsRoutes);
 
 const network = env.network;
 const appInfo = env.app;
