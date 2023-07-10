@@ -248,7 +248,9 @@ int newPanel(argList args) {
 		}
 
 		while (panel.size() < MIN_PANEL_SIZE) {
-			panel.insert(getRandomFromSet(genes));
+            int r = getRandomFromSet(genes);
+            if (r < 0) continue;
+			panel.insert(r);
 		}
 
 		for (auto g : panel) {
