@@ -295,7 +295,7 @@ def main():
             do_exam(exam_id, world_name)
         elif tokens[0] == "verificar-exame":
             if len(tokens) != 2:
-                print("Comando invalido")
+                print("Comando invalido: <id-do-exame>")
                 continue
             exam_id = tokens[1]
             verifiy_exam(exam_id)
