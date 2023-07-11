@@ -249,9 +249,8 @@ async function getAllCompletedExamsWithConditionsForUser(user_id) {
       id: userCompletedExams.rows[i].id,
       conditions: conditionsOfExam
     });
-
-    return exams;
   }
+  return exams;
 }
 
 module.exports = {

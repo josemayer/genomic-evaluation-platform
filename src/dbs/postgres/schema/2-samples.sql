@@ -72,7 +72,7 @@ ALTER SEQUENCE tipo_painel_id_seq RESTART WITH 13;
 
 INSERT INTO coleta (id, cliente_id, data)
 VALUES
-  (1, 1, '2023-06-07 08:12:33'),
+  (1, 2, '2023-06-07 08:12:33'),
   (2, 2, '2023-06-07 08:12:33'),
   (3, 6, '2023-06-09 13:21:49'),
   (4, 8, '2023-06-10 09:10:12'),

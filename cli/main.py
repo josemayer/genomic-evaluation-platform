@@ -12,6 +12,10 @@ GENERATOR = "./generator"
 global_token = ""
 
 
+def show_tree(family_id):
+    res = make_get_request_with_token('/neo4j/listFamily/' + family_id)
+    print(res)
+
 
 def add_condition(condition_name):
     condition_description = input("Digite a descricao da condicao: ")
@@ -274,12 +278,19 @@ def main():
 
     os.chdir(GENERATOR_PATH)
 
+    PROMPT = ""
+
     while True:
-        line = input("> ")
+        line = input(f"[{PROMPT}] > ")
         tokens = line.split(" ")
         if tokens[0] == "sair":
             print("Saindo...")
             break
+        elif tokens[0] == "mudar-prompt":
+            if len(tokens) != 2:
+                print("Comando invalido: mudar-prompt <novo_prompt>")
+                continue
+            PROMPT = tokens[1]
         elif tokens[0] == "ls":
             print(os.getcwd())
         elif tokens[0] == "notificacoes":
@@ -338,6 +349,10 @@ def main():
             show_user_conditions()
         elif tokens[0] == "listar-tipos-de-painel":
             list_panel_types()
+        elif tokens[0] == "mostrar-arvore":
+            if len(tokens) != 2:
+                print("Comando invalido: mostrar-arvore <id da familia>")
+            show_tree(tokens[1])
         else:
             print("Comando invalido")
 
