@@ -220,6 +220,20 @@ def show_conditions():
     for cond in req:
         print(f"{cond['id']} {cond['nome']}")
 
+def show_user_conditions():
+  req = make_get_request_with_token('/exams/user/completed')
+
+  if not "exams" in req:
+    print("Erro ao listar exames:")
+    print(req["message"])
+    return None
+
+  for exam in req["exams"]:
+    print(f"Exame {exam['id']}:")
+    for cond in exam['conditions']:
+      print(f"  - {cond['nome']}: {cond['probabilidade']}")
+  print('')
+
 def register_panel_type_with_conditions(panel_type_desc, conditions):
   req = make_post_request_with_token('/panels/types/new', {'description': panel_type_desc, 'conditions_id_list': conditions})
 
@@ -314,8 +328,10 @@ def main():
                 continue
             condition_name = tokens[1]
             add_condition(condition_name)
-        elif tokens[0] == "mostrar-condicoes":
+        elif tokens[0] == "listar-condicoes":
             show_conditions()
+        elif tokens[0] == "mostrar-condicoes-identificadas":
+            show_user_conditions()
         elif tokens[0] == "listar-tipos-de-painel":
             list_panel_types()
         else:
