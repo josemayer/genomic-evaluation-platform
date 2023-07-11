@@ -175,7 +175,7 @@ async function processExam(examId, user, genes) {
   await redisService.addGenesToUser(clienteID, genes);
 
   // First check if the user exists
-  
+
   const userConditions = await redisService.findUserConditions(clienteID);
 
   userConditions.forEach(async (condition) => {
@@ -192,7 +192,7 @@ async function processExam(examId, user, genes) {
   console.log(pgRes);
 
   // Adicionar uma notificao para o usuario
-  pgRes = await pg.query(`insert into notificacao (usuario_id, data, visualizado, texto) 
+  pgRes = await pg.query(`insert into notificacao (usuario_id, data, visualizado, texto)
    values ($1, $2, 'f', 'O seu exame foi processado, logo sera verificado por um medico');`, [clienteID, time.getFormattedNow()], 'system');
 
   console.log(pgRes);
@@ -204,7 +204,11 @@ async function validateExam(id, user) {
   if (!permissions.hasType(user.types, 'medico'))
     throw new Error('Only doctors can validate exams');
 
-  // pass
+  pgRes = await pg.query(
+    'INSERT INTO andamento_exame (usuario_id, exame_id, data, estado_do_exame) VALUES ($1, $2, $3, $4)',
+    [parseInt(user.id), id, time.getFormattedNow(), 'completo'], 'user');
+  console.log(pgRes);
+
   return null;
 }
 
@@ -220,7 +224,6 @@ async function getConditionsOfExam(user, id) {
       historyArr.push(h.nome);
   });
   return historyArr;
-  return ['asma, chule']
 }
 
 module.exports = {

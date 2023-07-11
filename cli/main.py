@@ -135,37 +135,11 @@ def todos():
         print(notification)
 
 
-def verifiy_exam(exam_id):
-    print(f"Verificando o exame {exam_id}")
-    summary = "Identifiquei:"
-
-    conditions = [
-        ["chule", "0.8"],
-        ["asma", "0.1"],
-        ["astigmatismo", "0.7"],
-        ["cancer_de_pulmao", "0.001"]
-    ]
-
-    relations = [
-        ["Pai", "Joao"],
-        ["Mae", "Maria"],
-        ["Filho", "Joao Vinicius"],
-    ]
-
-    res = summary + '\nCONDICOES\n' + "\n".join([": ".join(cond) for cond in conditions]) + "\nRELACOES\n" + "\n".join(
-        [": ".join(rel) for rel in relations])
-
-    print(res)
-    answer = input("Y/N: ")
-
-    while "Y" not in answer and "N" not in answer:
-        answer = input("Y/N: ")
-
-    if "Y" in answer:
-        print("Enviando para o paciente")
-    else:
-        print("Exame rejeitado")
-
+def validate_exam(exam_id):
+    make_post_request_with_token('/exams/step/validate', {'exam_id': exam_id})
+    print(f"""
+        O exame foi validado
+    """)
 
 def do_exam(exam_id, world_name):
 
@@ -308,12 +282,12 @@ def main():
             exam_id = tokens[1]
             world_name = tokens[2]
             do_exam(exam_id, world_name)
-        elif tokens[0] == "verificar-exame":
+        elif tokens[0] == "validar-exame":
             if len(tokens) != 2:
-                print("Comando invalido: <id-do-exame>")
+                print("Comando invalido: validar-exame <id-do-exame>")
                 continue
             exam_id = tokens[1]
-            verifiy_exam(exam_id)
+            validate_exam(exam_id)
         elif tokens[0] == "registrar-coleta":
             if len(tokens) != 2:
                 print("Comando invalido: registrar-coleta <id_usuario>")
