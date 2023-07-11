@@ -136,6 +136,31 @@ async function identifyExam(req, res) {
 
 }
 
+async function listAllCompletedExamsWithConditionsOfUser(req, res) {
+  const auth_header = req.headers.authorization;
+
+  if (!auth_header) {
+    res.status(400);
+    res.json({
+      message: 'Required authorization header'
+    });
+    return res;
+  }
+
+  try {
+    const user = auth.decodeToken(auth_header);
+    const examsUser = await exams.getAllCompletedExamsWithConditionsForUser(user.userData.id);
+
+    res.status(200);
+    res.json({
+      exams: examsUser,
+    });
+  } catch(err) {
+    res.status(err.statusCode || 500);
+    res.json({ message: err.message });
+  }
+}
+
 function isArray(obj) {
  return Array.isArray(obj);
 }
@@ -149,4 +174,5 @@ module.exports = {
   examInfo,
   stepExam,
   identifyExam,
+  listAllCompletedExamsWithConditionsOfUser,
 };

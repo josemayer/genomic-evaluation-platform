@@ -2,6 +2,7 @@ const pg = require('../config/postgres');
 const redisService = require('../services/redis');
 const notifications = require('../services/notifications');
 const samples = require('../services/samples');
+const conditions = require('../services/conditions');
 const permissions = require('../helpers/permissions');
 const time = require('../helpers/time');
 
@@ -226,11 +227,29 @@ async function getConditionsOfExam(user, id) {
   return historyArr;
 }
 
+async function getAllCompletedExamsWithConditionsForUser(user_id) {
+  const userCompletedExams = await pg.query('SELECT e.id FROM exame as e, coleta as c, EstadoExameView as eev WHERE c.id = e.coleta_id AND eev.exame_id = e.id AND c.cliente_id = $1', [user_id], 'system');
+
+  const exams = [];
+  for (let i = 0; i < userCompletedExams.rows.length; i++) {
+    const exam_id = userCompletedExams.rows[i].id;
+    const conditionsOfExam = await conditions.listAllConditionsWithExam(exam_id);
+
+    exams.push({
+      id: userCompletedExams.rows[i].id,
+      conditions: conditionsOfExam
+    });
+
+    return exams;
+  }
+}
+
 module.exports = {
   getAllExams,
   getExamById,
   getSampleOfExam,
   getExamHistory,
   stepExam,
-  getConditionsOfExam
+  getConditionsOfExam,
+  getAllCompletedExamsWithConditionsForUser
 };

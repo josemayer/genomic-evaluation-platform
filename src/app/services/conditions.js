@@ -37,7 +37,19 @@ async function listAllConditions() {
   return ret.rows
 }
 
+async function listAllConditionsWithExam(exam_id) {
+  let conditions = await pg.query(
+    `SELECT c.id, c.nome, c.descricao, ic.probabilidade
+    FROM identifica_condicao AS ic, condicao AS c
+    WHERE ic.exame_id = $1 AND ic.condicao_id = c.id`,
+    [exam_id], 'user'
+  )
+
+  return conditions.rows
+}
+
 module.exports = {
   addCondition,
   listAllConditions,
+  listAllConditionsWithExam,
 }

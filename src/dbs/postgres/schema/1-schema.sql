@@ -242,18 +242,6 @@ CREATE TRIGGER triggerUpdateCliente
 INSTEAD OF UPDATE ON ClienteView
 FOR EACH ROW EXECUTE PROCEDURE functionUpdateCliente();
 
---- Authorization of users
-
-CREATE USER usuario WITH PASSWORD 'userpass';
-CREATE USER system WITH PASSWORD 'syspass';
-
-GRANT SELECT ON ALL TABLES IN SCHEMA public TO usuario;
-GRANT INSERT, UPDATE ON ClienteView, identifica_condicao, coleta, exame, andamento_exame, pode_identificar_condicao, tipo_painel, condicao, condicao_sequencia_dna TO usuario;
-GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO usuario;
-
-GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA public TO system;
-GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO system;
-
 --- EstadoDoExameView
 
 DROP VIEW IF EXISTS EstadoExameView CASCADE;
@@ -267,3 +255,15 @@ WITH TempoUltimoEstado AS (
 SELECT ae.exame_id, ae.estado_do_exame
 FROM andamento_exame ae, TempoUltimoEstado tu
 WHERE ae.exame_id = tu.exame_id AND ae.data = tu.data;
+
+--- Authorization of users
+
+CREATE USER usuario WITH PASSWORD 'userpass';
+CREATE USER system WITH PASSWORD 'syspass';
+
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO usuario;
+GRANT INSERT, UPDATE ON ClienteView, identifica_condicao, coleta, exame, andamento_exame, pode_identificar_condicao, tipo_painel, condicao, condicao_sequencia_dna TO usuario;
+GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO usuario;
+
+GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA public TO system;
+GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO system;
