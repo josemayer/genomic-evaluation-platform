@@ -1,16 +1,21 @@
 # Comandos
 
 - [ ] fazer-exame
-    - [ ] modificar as pendencias
-    - [ ] neo4j
+    - [X] modificar as pendencias
     - [ ] colocar notificoes
 - [ ] verificar-exame
     - [ ] modificar as pendencias
     - [ ] colocar notificoes
 - [ ] mostrar-condicoes
-- [ ] mostrar-arvore
 - [ ] ajuda
 - [X] <pendencias> retorna algo se vazio
+
+# Depois
+
+- [ ] documentacao
+- [ ] mostrar-arvore
+- [ ] fazer-exame
+    - [ ] neo4j
 
 # Extra
 

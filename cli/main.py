@@ -11,6 +11,8 @@ GENERATOR = "./generator"
 
 global_token = ""
 
+
+
 def add_condition(condition_name):
     condition_description = input("Digite a descricao da condicao: ")
 

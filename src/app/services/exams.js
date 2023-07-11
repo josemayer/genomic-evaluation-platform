@@ -158,7 +158,7 @@ async function putExamInQueue(sample_id, panel_type_id, user) {
   return null;
 }
 
-async function processExam(id, user, genes) {
+async function processExam(examId, user, genes) {
   if (!permissions.hasType(user.types, 'laboratorista'))
     throw new Error('Only laboratory technicians can process exams');
 
@@ -168,16 +168,23 @@ async function processExam(id, user, genes) {
 
   // First check if the user exists
   
-  const result = await redisService.findUserConditions(user_id);
+  const userConditions = await redisService.findUserConditions(user_id);
 
-  console.log(result);
-
-  result.forEach(async (condition) => {
+  userConditions.forEach(async (condition) => {
     const pgRes = await pg.query(
       `INSERT INTO identifica_condicao (exame_id, condicao_id, probabilidade) VALUES ($1, $2, $3)`,
-      [id, condition.id, condition.probability], 'user');
+      [examId, condition.id, condition.probability], 'user');
     console.log(pgRes);
   });
+
+
+  // Modificar as pendencias
+  const pgRes = await pg.query(
+    'INSERT INTO andamento_exame (usuario_id, exame_id, data, estado_do_exame) VALUES ($1, $2, $3, $4)',
+    [user_id, examId, time.getFormattedNow(), 'processado'], 'user');
+  console.log(pgRes);
+
+
 
   return null;
 }

@@ -17,8 +17,6 @@ Logar com 3 terminais diferentes
 [CLI] > Entre o seu email: john.doe@exemplo.com
 [CLI] > Entre a sua senha: password
 
-    Imprime o id do usuario
-
 ----------------------------------------------------------------------------------
 
 [LAB] > Entre o seu email: alice.johnson@exemplo.com
@@ -36,18 +34,6 @@ Logar com 3 terminais diferentes
     mostrar todos os comandos. Permissoes. (idealmente so as que o usuario tem)
 
 [LAB] > adicionar-condicao <nome-da-condicao>
-
-    => Retorna o id da condicao
-
-[LAB] > registrar-tipo-de-painel '<descricao>' condicao_id .. condicao_id
-
-[LAB] > pendencias
-
-    Existem <n> exames pendentes:
-
-    [id-do-exame] [id-do-usuario]
-    [id-do-exame] [id-do-usuario]
-    ...
 
 [CLI] > registrar-coleta <id-do-usuario>
 
@@ -121,3 +107,8 @@ Logar com 3 terminais diferentes
 
     Bromidrose plantar: 0.5
     Câncer de pulmão: 0.1
+
+
+# Realizar 3 exames A: (CHL3) (completo) B: (completo)
+
+    Para duas pessoas A e B
