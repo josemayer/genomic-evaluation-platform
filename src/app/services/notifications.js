@@ -55,7 +55,7 @@ async function getToDos(userTypes) {
     let num = parseInt(query.rowCount)
 
     if (num > 0) {
-      res.push(`Existe${num==1?'':'m'} ${num} exames na fila de avaliação`);
+      res.push(`Existe${num==1?'':'m'} ${num} exame${num==1?'':'s'} na fila de avaliação`);
       for (let i = 0; i < num; i++) {
       	res.push(`  - ${query.rows[i].exame_id}`)
       }

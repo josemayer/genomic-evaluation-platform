@@ -21,5 +21,5 @@
 - [ ] <pendencias> imprime uma mensagem mais clara
 - [ ] <listar-condicoes>
 - [ ] checar o update bayesiano
-- [ ] <pendencias> tirar o s em pendencias
+- [X] <pendencias> tirar o s em pendencias
 - [ ] <notificaoes> toma um argumento a mais para mostrar todas as mensagens .e.g <-a>
