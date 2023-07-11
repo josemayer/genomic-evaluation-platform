@@ -226,8 +226,7 @@ async function validateExam(id, user) {
 async function getConditionsOfExam(user, id) {
   if (!permissions.hasType(user.types, 'laboratorista') && !permissions.hasType(user.types, 'medico'))
     throw new Error('Only laboratory technicians can get conditions of exams');
-  // TODO(luatil): UNDO This id change
-  id = 4;
+ 
   const conditions = await pg.query('select * from pode_identificar_condicao pc inner join condicao on pc.condicao_id = condicao.id where pc.tipo_painel_id = $1', [id], 'system')
 
   const historyArr = [];
