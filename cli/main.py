@@ -115,17 +115,20 @@ def login(email, password):
 
     print("Login bem sucedido")
     global_token = token_or_false
-    print(token_or_false)
+    # print(token_or_false)
     return True
 
 
 def notifications():
     notifications_internal = make_get_request_with_token('/notifications')
-    for notification in notifications_internal:
-        print(notification)
+    for notification in filter(lambda x: not x['visualizado'], notifications_internal):
+        print(f"{notification['data']} {notification['texto']}")
 
 def todos():
     notifications_internal = make_get_request_with_token('/notifications/todos')
+    if len(notifications_internal) == 0:
+        print("Nenhuma pendencia")
+        return
     for notification in notifications_internal:
         print(notification)
 
@@ -183,7 +186,7 @@ def do_exam(exam_id, world_name):
         return None
 
     print_string = f"""
-        Realizando o exame.
+        O exame foi realizado.
     """
 
     print(print_string)
@@ -197,8 +200,15 @@ def register_sample(user_id):
         print(req["message"])
         return None
 
-    print("Coleta registrada com sucesso!")
-    print(req["sample"])
+    coleta_id = req['sample']['id']
+
+    print_string = f"""
+        Coleta registrada com sucesso!
+        Id da coleta: {coleta_id}
+    """
+
+    print(print_string)
+
 
 
 def view_samples():
@@ -216,8 +226,6 @@ def view_samples():
 
 def ask_for_exam(sample_id, panel_type_id):
     req = make_post_request_with_token('/exams/step/enqueue', {'sample_id': sample_id, 'panel_type_id': panel_type_id})
-
-    print(req)
 
     # TODO(luatil): Handle req failure
     exam_id = req['step_result']['exam_id']
@@ -240,7 +248,7 @@ def register_panel_type_with_conditions(panel_type_desc, conditions):
     return None
 
   print("Painel registrado com sucesso!")
-  print(req["panel"])
+  # print(req["panel"])
 
 def list_panel_types():
     req = make_get_request_with_token('/panels/types/list')
@@ -253,14 +261,14 @@ def main():
     logged = False
 
     while not logged:
-        # email = input("Entre o seu email: ")
-        # password = input("Entre a sua senha: ")
+        email = input("Entre o seu email: ")
+        password = input("Entre a sua senha: ")
 
         #  email = "john.doe@exemplo.com"
         #  password = "password"
 
-        email = "alice.johnson@exemplo.com"
-        password = "qwerty"
+        # email = "alice.johnson@exemplo.com"
+        # password = "qwerty"
 
         if login(email, password):
             logged = True
@@ -300,7 +308,7 @@ def main():
             exam_id = tokens[1]
             verifiy_exam(exam_id)
         elif tokens[0] == "registrar-coleta":
-            if len(tokens) != 3:
+            if len(tokens) != 2:
                 print("Comando invalido: registrar-coleta <id_usuario>")
                 continue
             user_id = tokens[1]

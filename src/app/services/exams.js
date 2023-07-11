@@ -166,6 +166,19 @@ async function processExam(id, user, genes) {
 
   await redisService.addGenesToUser(user_id, genes);
 
+  // First check if the user exists
+  
+  const result = await redisService.findUserConditions(user_id);
+
+  console.log(result);
+
+  result.forEach(async (condition) => {
+    const pgRes = await pg.query(
+      `INSERT INTO identifica_condicao (exame_id, condicao_id, probabilidade) VALUES ($1, $2, $3)`,
+      [id, condition.id, condition.probability], 'user');
+    console.log(pgRes);
+  });
+
   return null;
 }
 

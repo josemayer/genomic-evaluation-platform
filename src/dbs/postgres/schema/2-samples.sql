@@ -1,12 +1,12 @@
 INSERT INTO usuario (id, nome_completo, email, senha)
 VALUES
-  (1, 'John Doe', 'john.doe@exemplo.com', 'password'),
+  (1, 'John Doe', 'cli', 'cli'),
   (2, 'Jane Smith', 'jane.smith@exemplo.com', 'password123'),
-  (3, 'Alice Johnson', 'alice.johnson@exemplo.com', 'qwerty'),
+  (3, 'Alice Johnson', 'lab', 'lab'),
   (4, 'Bob Anderson', 'bob.anderson@exemplo.com', 'abcdef'),
   (5, 'Emily Davis', 'emily.davis@exemplo.com', '123456'),
   (6, 'Michael Wilson', 'michael.wilson@exemplo.com', 'abc123'),
-  (7, 'Sarah Thompson', 'sarah.thompson@exemplo.com', 'password456'),
+  (7, 'Sarah Thompson', 'med', 'med'),
   (8, 'David Rodriguez', 'david.rodriguez@exemplo.com', 'p@$$w0rd'),
   (9, 'Olivia Martinez', 'olivia.martinez@exemplo.com', 'test123'),
   (10, 'James Taylor', 'james.taylor@exemplo.com', 'letmein');
@@ -120,10 +120,10 @@ VALUES
   (2, 'AGCTAGCTA', 0.5, 0.5),
   (3, 'GCTAGCTAG', 0.02, 0.3);
 
-INSERT INTO identifica_condicao (exame_id, condicao_id)
+INSERT INTO identifica_condicao (exame_id, condicao_id, probabilidade)
 VALUES
-  (2, 1),
-  (2, 3);
+  (2, 1, 0.1),
+  (2, 3, 0.2);
 
 INSERT INTO pode_identificar_condicao (tipo_painel_id, condicao_id)
 VALUES

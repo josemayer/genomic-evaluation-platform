@@ -154,9 +154,10 @@ CREATE TABLE condicao_sequencia_dna (
 CREATE TABLE identifica_condicao (
     exame_id        BIGINT,
     condicao_id     BIGINT,
+    probabilidade   FLOAT NOT NULL,
 
-    CONSTRAINT identifica_condicao_painel_fk FOREIGN KEY (exame_id)
-      REFERENCES painel (exame_id) ON DELETE CASCADE,
+    CONSTRAINT identifica_condicao_exame_fk FOREIGN KEY (exame_id)
+      REFERENCES exame (id) ON DELETE CASCADE,
     CONSTRAINT identifica_condicao_condicao_fk FOREIGN KEY (condicao_id)
       REFERENCES condicao (id),
     CONSTRAINT identifica_conexao_pk PRIMARY KEY (exame_id, condicao_id)
@@ -247,7 +248,7 @@ CREATE USER usuario WITH PASSWORD 'userpass';
 CREATE USER system WITH PASSWORD 'syspass';
 
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO usuario;
-GRANT INSERT, UPDATE ON ClienteView, coleta, exame, andamento_exame, pode_identificar_condicao, tipo_painel, condicao, condicao_sequencia_dna TO usuario;
+GRANT INSERT, UPDATE ON ClienteView, identifica_condicao, coleta, exame, andamento_exame, pode_identificar_condicao, tipo_painel, condicao, condicao_sequencia_dna TO usuario;
 GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO usuario;
 
 GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA public TO system;
