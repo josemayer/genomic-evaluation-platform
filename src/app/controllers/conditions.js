@@ -43,6 +43,13 @@ async function addCondition(req, res) {
   return res;
 }
 
+async function listAllConditions(req, res) {
+	res.status(200);
+	res.json(await conditions.listAllConditions());
+}
+
+
 module.exports = {
   addCondition,
+  listAllConditions,
 };
