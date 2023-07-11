@@ -162,13 +162,21 @@ async function processExam(examId, user, genes) {
   if (!permissions.hasType(user.types, 'laboratorista'))
     throw new Error('Only laboratory technicians can process exams');
 
-  const user_id = parseInt(user.id);
+  const laboratoristaID = parseInt(user.id);
 
-  await redisService.addGenesToUser(user_id, genes);
+  let pgRes;
+
+  pgRes = await pg.query('select cliente_id from exame inner join coleta on coleta_id = coleta.id where exame.id = $1;', [examId], 'user');
+
+  const clienteID = parseInt(pgRes.rows[0].cliente_id);
+
+  console.log(pgRes);
+
+  await redisService.addGenesToUser(clienteID, genes);
 
   // First check if the user exists
   
-  const userConditions = await redisService.findUserConditions(user_id);
+  const userConditions = await redisService.findUserConditions(clienteID);
 
   userConditions.forEach(async (condition) => {
     const pgRes = await pg.query(
@@ -177,14 +185,17 @@ async function processExam(examId, user, genes) {
     console.log(pgRes);
   });
 
-
   // Modificar as pendencias
-  const pgRes = await pg.query(
+  pgRes = await pg.query(
     'INSERT INTO andamento_exame (usuario_id, exame_id, data, estado_do_exame) VALUES ($1, $2, $3, $4)',
-    [user_id, examId, time.getFormattedNow(), 'processado'], 'user');
+    [laboratoristaID, examId, time.getFormattedNow(), 'processado'], 'user');
   console.log(pgRes);
 
+  // Adicionar uma notificao para o usuario
+  pgRes = await pg.query(`insert into notificacao (usuario_id, data, visualizado, texto) 
+   values ($1, $2, 'f', 'O seu exame foi processado, logo sera verificado por um medico');`, [clienteID, time.getFormattedNow()], 'system');
 
+  console.log(pgRes);
 
   return null;
 }

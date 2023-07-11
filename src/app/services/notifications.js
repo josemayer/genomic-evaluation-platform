@@ -15,7 +15,7 @@ async function getNotifications (user_id) {
     pg.query(`BEGIN`, [], 'system');
 
     const notifications = await pg.query(`
-      SELECT * FROM notificacao WHERE usuario_id = $1 ORDER BY data DESC;
+      SELECT * FROM notificacao WHERE usuario_id = $1 ORDER BY data ASC;
     `, [user_id], 'system');
 
     await readAllNotifications();

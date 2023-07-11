@@ -2,7 +2,7 @@
 
 - [ ] fazer-exame
     - [X] modificar as pendencias
-    - [ ] colocar notificoes
+    - [X] colocar notificoes
 - [ ] verificar-exame
     - [ ] modificar as pendencias
     - [ ] colocar notificoes
