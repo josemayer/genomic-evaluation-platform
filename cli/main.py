@@ -351,7 +351,8 @@ def main():
             list_panel_types()
         elif tokens[0] == "mostrar-arvore":
             if len(tokens) != 2:
-                print("Comando invalido: mostrar-arvore <id da familia>")
+                print("Comando invalido: mostrar-arvore <id de membro familia>")
+                continue
             show_tree(tokens[1])
         else:
             print("Comando invalido")
