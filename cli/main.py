@@ -239,6 +239,11 @@ def ask_for_exam(sample_id, panel_type_id):
 
     print(print_string)
 
+def show_conditions():
+    req = make_get_request_with_token('/conditions/list')
+    for cond in req:
+        print(f"{cond['id']} {cond['nome']}")
+
 def register_panel_type_with_conditions(panel_type_desc, conditions):
   req = make_post_request_with_token('/panels/types/new', {'description': panel_type_desc, 'conditions_id_list': conditions})
 
@@ -333,6 +338,8 @@ def main():
                 continue
             condition_name = tokens[1]
             add_condition(condition_name)
+        elif tokens[0] == "mostrar-condicoes":
+            show_conditions()
         elif tokens[0] == "listar-tipos-de-painel":
             list_panel_types()
         else:

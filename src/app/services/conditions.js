@@ -3,16 +3,16 @@ const redisService = require('../services/redis');
 
 async function addCondition(description, condition_name, prob_pop, genetic_information) {
     const conditionResult = await pg.query(
-      `INSERT INTO condicao (descricao, nome, prob_populacao) 
+      `INSERT INTO condicao (descricao, nome, prob_populacao)
       VALUES ($1, $2, $3) RETURNING *`,
       [description, condition_name, prob_pop], 'user');
-    
+
     const condition_id = parseInt(conditionResult.rows[0].id);
-    
+
     redisService.addCondition(condition_id, parseFloat(prob_pop), genetic_information);
 
     let query = 'INSERT INTO condicao_sequencia_dna (condicao_id, sequencia_dna, prob_seq, prob_seq_dado_cond) VALUES ';
-    
+
     let values = [];
 
     for (let i = 0; i < genetic_information.length; i++) {
@@ -32,6 +32,12 @@ function format(conditionId, genetic_information) {
     return `(${parseInt(conditionId)}, '${genetic_information.sequence}', ${parseFloat(genetic_information.probabilityInPopulation)}, ${parseFloat(genetic_information.probabilityGivenSequence)})`;
 }
 
+async function listAllConditions() {
+  let ret = await pg.query('SELECT id, nome FROM condicao')
+  return ret.rows
+}
+
 module.exports = {
   addCondition,
+  listAllConditions,
 }

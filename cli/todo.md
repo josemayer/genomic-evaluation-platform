@@ -14,7 +14,7 @@
 
 # Extra
 
-- [ ] <mostrar-condicoes> funciona por exame
+- [X] <mostrar-condicoes> funciona por exame
 - [ ] login (imprimir o id do usuario) ou remover necessidade
 - [ ] imprimir [CLI|LAB|MED]
 - [ ] <registrar-condicao> imprime o id da condicao
