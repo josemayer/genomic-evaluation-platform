@@ -7,8 +7,8 @@ VALUES
   (5, 'Emily Davis', 'emily.davis@exemplo.com', '123456'),
   (6, 'Michael Wilson', 'michael.wilson@exemplo.com', 'abc123'),
   (7, 'Sarah Thompson', 'med', 'med'),
-  (8, 'David Rodriguez', 'david.rodriguez@exemplo.com', 'p@$$w0rd'),
-  (9, 'Olivia Martinez', 'olivia.martinez@exemplo.com', 'test123'),
+  (8, 'David Rodriguez', 'pai', 'pai'),
+  (9, 'Olivia Martinez', 'filha', 'filha'),
   (10, 'James Taylor', 'james.taylor@exemplo.com', 'letmein');
 
 ALTER SEQUENCE usuario_id_seq RESTART WITH 11;

@@ -20,7 +20,7 @@ people: generator conditions
 	./generator new_child jose lurdes joao_luis
 	./generator new_child marcos viriginia bernadete
 	./generator new_child joao_luis bernadete pedro
-	./generator new_child joana vinicius joao_vinicius
+	./generator new_child joana vinicius john 
 
 
 clean:

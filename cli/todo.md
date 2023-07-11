@@ -1,12 +1,17 @@
+# Apresentação
+
+- [ ] Colocar o curl na hora
+
 # Comandos
 
-- [ ] fazer-exame
+- [X] fazer-exame
     - [X] modificar as pendencias
     - [X] colocar notificoes
-- [ ] verificar-exame
-    - [ ] modificar as pendencias
-    - [ ] colocar notificoes
-- [ ] mostrar-condicoes
+    - [X] neo4j
+- [X] verificar-exame
+    - [X] modificar as pendencias
+    - [X] colocar notificoes
+- [X] mostrar-condicoes
 - [ ] ajuda
 - [X] <pendencias> retorna algo se vazio
 
@@ -14,16 +19,14 @@
 
 - [ ] documentacao
 - [ ] mostrar-arvore
-- [ ] fazer-exame
-    - [ ] neo4j
 
 # Extra
 
-- [ ] <mostrar-condicoes> funciona por exame
+- [X] <mostrar-condicoes> funciona por exame
 - [ ] login (imprimir o id do usuario) ou remover necessidade
 - [ ] imprimir [CLI|LAB|MED]
 - [ ] <registrar-condicao> imprime o id da condicao
-- [ ] <pendencias> imprime uma mensagem mais clara
+- [ ] <pendencias> imprime uma mensagem mais clara. Nao somente o id. Ordenado.
 - [X] <listar-condicoes>
 - [ ] checar o update bayesiano
 - [X] <pendencias> tirar o s em pendencias

@@ -130,12 +130,10 @@ int newCondition(argList args) {
 
 	float diseaseProbability = getRandomInRange(0.01, 0.3);
 	file << genes.size() << ' ' << diseaseProbability << std::endl;
-    std::cout << genes.size() << ' ' << diseaseProbability << std::endl;
 	for (auto gene : genes) {
 		float p1 = getRandomZeroToOne();
 		float p2 = getRandomZeroToOne();
 		file << gene << ' ' << p1 << ' ' << p2 << std::endl;
-        std::cout << gene << ' ' << p1 << ' ' << p2 << std::endl;
 	}
 
 	return 0;
@@ -261,6 +259,36 @@ int newPanel(argList args) {
 	return 0;
 }
 
+int readCondition(argList args) {
+	if (args.size() > 0 && args[0] == "help") {
+		return 0;
+	}
+
+	if (args.size() < 1) {
+		std::cerr<<"Missing condition name.";
+		return 1;
+	}
+
+	auto f = readFromWorld("conditions", args[0]);
+
+	int geneCount;
+	float p;
+
+	f >> geneCount >> p;
+	std::cout << geneCount << ' ' << p << std::endl;
+	while (geneCount--) {
+		int gene;
+		f >> gene;
+		std::cout << gene << ' ';
+		f >> p;
+		std::cout << p << ' ';
+		f >> p;
+		std::cout << p << std::endl;
+	}
+
+	return 0;
+}
+
 int hash(int x, char *str) {
 	int h = x;
 	while (*str) {
@@ -280,6 +308,7 @@ int main(int argc, char *argv[]) {
 		{"new_person", newPerson},
 		{"new_child", newChild},
 		{"new_panel", newPanel},
+		{"read_condition", readCondition},
 		{"help", help},
 	};
 

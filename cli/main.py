@@ -15,8 +15,9 @@ global_token = ""
 
 def add_condition(condition_name):
     condition_description = input("Digite a descricao da condicao: ")
+    world_name = input("Digite o nome no mundo: ")
 
-    data = subprocess.check_output([GENERATOR, "new_condition", condition_name])
+    data = subprocess.check_output([GENERATOR, "read_condition", world_name])
     data = data.decode('utf-8')
     data = data.split('\n')
 
@@ -150,6 +151,9 @@ def do_exam(exam_id, world_name):
         return None
 
     conditions_to_find = req['conditions_to_find']
+
+    for i in range(len(req['conditions_to_find'])):
+        conditions_to_find[i] = input(f"Qual e o nome de {conditions_to_find[i]} no mundo?")
 
     data = subprocess.check_output([GENERATOR, "new_panel", world_name] + conditions_to_find)
     data = data.decode('utf-8')

@@ -5,6 +5,7 @@ const samples = require('../services/samples');
 const conditions = require('../services/conditions');
 const permissions = require('../helpers/permissions');
 const time = require('../helpers/time');
+const neo4j = require('../services/neo4j');
 
 async function getAllExams() {
   const exams = await pg.query('SELECT * FROM exame', [], 'user');
@@ -70,39 +71,39 @@ async function stepExam(user, body, type) {
   if (!type)
     throw new Error('Missing step type');
 
-    if (type === 'enqueue') {
-      const sample_id = body.sample_id;
-      const panel_type_id = body.panel_type_id;
+  if (type === 'enqueue') {
+    const sample_id = body.sample_id;
+    const panel_type_id = body.panel_type_id;
 
-      if (!sample_id)
-        throw new Error('Missing sample id');
+    if (!sample_id)
+      throw new Error('Missing sample id');
 
-      return await putExamInQueue(sample_id, panel_type_id, user);
-    }
+    return await putExamInQueue(sample_id, panel_type_id, user);
+  }
 
-    if (type === 'process') {
-      const exam_id = body.exam_id;
-      const genes = body.genes;
+  if (type === 'process') {
+    const exam_id = body.exam_id;
+    const genes = body.genes;
 
-      if (!exam_id)
-        throw new Error('Missing exam id');
+    if (!exam_id)
+      throw new Error('Missing exam id');
 
-      if (!genes)
-        throw new Error('Missing dna');
+    if (!genes)
+      throw new Error('Missing dna');
 
-      return await processExam(exam_id, user, genes);
-    }
+    return await processExam(exam_id, user, genes);
+  }
 
-    if (type === 'validate') {
-      const exam_id = body.exam_id;
+  if (type === 'validate') {
+    const exam_id = body.exam_id;
 
-      if (!exam_id)
-        throw new Error('Missing exam id');
+    if (!exam_id)
+      throw new Error('Missing exam id');
 
-      return await validateExam(exam_id, user);
-    }
+    return await validateExam(exam_id, user);
+  }
 
-    return null;
+  return null;
 }
 
 async function estimateTime() {
@@ -169,34 +170,43 @@ async function processExam(examId, user, genes) {
 
   pgRes = await pg.query('select cliente_id from exame inner join coleta on coleta_id = coleta.id where exame.id = $1;', [examId], 'user');
 
-  const clienteID = parseInt(pgRes.rows[0].cliente_id);
+  const clientID = parseInt(pgRes.rows[0].cliente_id);
 
-  console.log(pgRes);
-
-  await redisService.addGenesToUser(clienteID, genes);
+  await redisService.addGenesToUser(clientID, genes);
 
   // First check if the user exists
 
-  const userConditions = await redisService.findUserConditions(clienteID);
+  const userConditions = await redisService.findUserConditions(clientID);
 
   userConditions.forEach(async (condition) => {
-    const pgRes = await pg.query(
+    pgRes = await pg.query(
       `INSERT INTO identifica_condicao (exame_id, condicao_id, probabilidade) VALUES ($1, $2, $3)`,
       [examId, condition.id, condition.probability], 'user');
-    console.log(pgRes);
   });
+
+  // Achar a familia do usuario
+
+  /** @type {number[]} */
+  const related = await redisService.findRelated(clientID);
+
+  console.log("RELATED");
+  console.log(related);
+
+  for (let i = 0; i < related.length; i++) {
+    // The older one is based on the order of the ids
+    const linked = [related[i], clientID].sort();
+    neo4j.linkParent(linked[0], linked[1], 1);
+  }
 
   // Modificar as pendencias
   pgRes = await pg.query(
     'INSERT INTO andamento_exame (usuario_id, exame_id, data, estado_do_exame) VALUES ($1, $2, $3, $4)',
     [laboratoristaID, examId, time.getFormattedNow(), 'processado'], 'user');
-  console.log(pgRes);
 
   // Adicionar uma notificao para o usuario
   pgRes = await pg.query(`insert into notificacao (usuario_id, data, visualizado, texto)
-   values ($1, $2, 'f', 'O seu exame foi processado, logo sera verificado por um medico');`, [clienteID, time.getFormattedNow()], 'system');
+   values ($1, $2, 'f', 'O seu exame foi processado, logo sera verificado por um medico');`, [clientID, time.getFormattedNow()], 'system');
 
-  console.log(pgRes);
 
   return null;
 }
@@ -218,11 +228,11 @@ async function getConditionsOfExam(user, id) {
     throw new Error('Only laboratory technicians can get conditions of exams');
   // TODO(luatil): UNDO This id change
   id = 4;
-  const conditions = await pg.query('select * from pode_identificar_condicao pc inner join condicao on pc.condicao_id = condicao.id where pc.condicao_id = $1', [id], 'system')
+  const conditions = await pg.query('select * from pode_identificar_condicao pc inner join condicao on pc.condicao_id = condicao.id where pc.tipo_painel_id = $1', [id], 'system')
 
   const historyArr = [];
   conditions.rows.forEach(h => {
-      historyArr.push(h.nome);
+    historyArr.push(h.nome);
   });
   return historyArr;
 }
