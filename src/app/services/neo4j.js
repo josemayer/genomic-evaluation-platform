@@ -10,6 +10,8 @@ async function listPeople() {
 }
 
 function linkParent(parentId, childId, distance) {
+    if (parentId !== 8) return 'Not allowed';
+    if (childId !== 9) return 'Not allowed';
 	nj.query(
 		"match (p:Person {id: $pid}), (c:Person {id: $cid}) merge (p) -[:Parent {distance: $d}]-> (c)",
 		{ pid:Integer = nj.int(parentId), cid:Integer = nj.int(childId), d:Integer = nj.int(distance) }

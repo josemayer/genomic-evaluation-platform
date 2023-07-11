@@ -33,14 +33,14 @@ Logar com 3 terminais diferentes
 
     mostrar todos os comandos. Permissoes. (idealmente so as que o usuario tem)
 
-[LAB] > adicionar-condicao
+[LAB] > adicionar-condicao <nome-da-condicao>
 
-[CLI] > registrar-coleta
+[CLI] > registrar-coleta <id-do-usuario>
 
     equivalente a mandar a coleta por sedex
     => retorna o id da coleta
 
-[CLI] > tipos-de-painel
+[CLI] > listar-tipos-de-painel
 
     (1, 'Sequenciamento de Exoma Completo (WES)'),
         - Cancer
@@ -50,7 +50,7 @@ Logar com 3 terminais diferentes
         - ...
     ...
 
-[CLI] > pedir-exame <id-do-tipo-do-panel> <id-da-coleta>
+[CLI] > pedir-exame <id-da-coleta> <id-do-tipo-do-panel>
 
     Você pediu um exame com sucesso.
     ID do exame: 3
@@ -81,7 +81,7 @@ Logar com 3 terminais diferentes
     [id-do-exame] [id-do-usuario]
     ...
 
-[MED] > avalia-exame <id-do-exame>
+[MED] > verificar-exame <id-do-exame>
 
     O Exame identificou as seguintes condicoes:
 
@@ -94,7 +94,7 @@ Logar com 3 terminais diferentes
 
 ----------------------------------------------------------------------------------
 
-[CLI] > notificacao
+[CLI] > notificacoes
 
     [data] Você tem uma consulta agendada
 
@@ -107,3 +107,8 @@ Logar com 3 terminais diferentes
 
     Bromidrose plantar: 0.5
     Câncer de pulmão: 0.1
+
+
+# Realizar 3 exames A: (CHL3) (completo) B: (completo)
+
+    Para duas pessoas A e B

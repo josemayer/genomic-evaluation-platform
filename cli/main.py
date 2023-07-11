@@ -11,10 +11,17 @@ GENERATOR = "./generator"
 
 global_token = ""
 
+
+def show_tree(family_id):
+    res = make_get_request_with_token('/neo4j/listFamily/' + family_id)
+    print(res)
+
+
 def add_condition(condition_name):
     condition_description = input("Digite a descricao da condicao: ")
+    world_name = input("Digite o nome no mundo: ")
 
-    data = subprocess.check_output([GENERATOR, "new_condition", condition_name])
+    data = subprocess.check_output([GENERATOR, "read_condition", world_name])
     data = data.decode('utf-8')
     data = data.split('\n')
 
@@ -115,52 +122,29 @@ def login(email, password):
 
     print("Login bem sucedido")
     global_token = token_or_false
-    print(token_or_false)
+    # print(token_or_false)
     return True
 
 
 def notifications():
     notifications_internal = make_get_request_with_token('/notifications')
-    for notification in notifications_internal:
-        print(notification)
+    for notification in filter(lambda x: not x['visualizado'], notifications_internal):
+        print(f"{notification['data']} {notification['texto']}")
 
 def todos():
     notifications_internal = make_get_request_with_token('/notifications/todos')
+    if len(notifications_internal) == 0:
+        print("Nenhuma pendencia")
+        return
     for notification in notifications_internal:
         print(notification)
 
 
-def verifiy_exam(exam_id):
-    print(f"Verificando o exame {exam_id}")
-    summary = "Identifiquei:"
-
-    conditions = [
-        ["chule", "0.8"],
-        ["asma", "0.1"],
-        ["astigmatismo", "0.7"],
-        ["cancer_de_pulmao", "0.001"]
-    ]
-
-    relations = [
-        ["Pai", "Joao"],
-        ["Mae", "Maria"],
-        ["Filho", "Joao Vinicius"],
-    ]
-
-    res = summary + '\nCONDICOES\n' + "\n".join([": ".join(cond) for cond in conditions]) + "\nRELACOES\n" + "\n".join(
-        [": ".join(rel) for rel in relations])
-
-    print(res)
-    answer = input("Y/N: ")
-
-    while "Y" not in answer and "N" not in answer:
-        answer = input("Y/N: ")
-
-    if "Y" in answer:
-        print("Enviando para o paciente")
-    else:
-        print("Exame rejeitado")
-
+def validate_exam(exam_id):
+    make_post_request_with_token('/exams/step/validate', {'exam_id': exam_id})
+    print(f"""
+        O exame foi validado
+    """)
 
 def do_exam(exam_id, world_name):
 
@@ -171,6 +155,9 @@ def do_exam(exam_id, world_name):
         return None
 
     conditions_to_find = req['conditions_to_find']
+
+    for i in range(len(req['conditions_to_find'])):
+        conditions_to_find[i] = input(f"Qual e o nome de {conditions_to_find[i]} no mundo?")
 
     data = subprocess.check_output([GENERATOR, "new_panel", world_name] + conditions_to_find)
     data = data.decode('utf-8')
@@ -183,7 +170,7 @@ def do_exam(exam_id, world_name):
         return None
 
     print_string = f"""
-        Realizando o exame.
+        O exame foi realizado.
     """
 
     print(print_string)
@@ -197,8 +184,15 @@ def register_sample(user_id):
         print(req["message"])
         return None
 
-    print("Coleta registrada com sucesso!")
-    print(req["sample"])
+    coleta_id = req['sample']['id']
+
+    print_string = f"""
+        Coleta registrada com sucesso!
+        Id da coleta: {coleta_id}
+    """
+
+    print(print_string)
+
 
 
 def view_samples():
@@ -217,8 +211,6 @@ def view_samples():
 def ask_for_exam(sample_id, panel_type_id):
     req = make_post_request_with_token('/exams/step/enqueue', {'sample_id': sample_id, 'panel_type_id': panel_type_id})
 
-    print(req)
-
     # TODO(luatil): Handle req failure
     exam_id = req['step_result']['exam_id']
     estimated_time_days = req['step_result']['estimated_time']['days']
@@ -231,6 +223,25 @@ def ask_for_exam(sample_id, panel_type_id):
 
     print(print_string)
 
+def show_conditions():
+    req = make_get_request_with_token('/conditions/list')
+    for cond in req:
+        print(f"{cond['id']} {cond['nome']}")
+
+def show_user_conditions():
+  req = make_get_request_with_token('/exams/user/completed')
+
+  if not "exams" in req:
+    print("Erro ao listar exames:")
+    print(req["message"])
+    return None
+
+  for exam in req["exams"]:
+    print(f"Exame {exam['id']}:")
+    for cond in exam['conditions']:
+      print(f"  - {cond['nome']}: {cond['probabilidade']}")
+  print('')
+
 def register_panel_type_with_conditions(panel_type_desc, conditions):
   req = make_post_request_with_token('/panels/types/new', {'description': panel_type_desc, 'conditions_id_list': conditions})
 
@@ -240,7 +251,7 @@ def register_panel_type_with_conditions(panel_type_desc, conditions):
     return None
 
   print("Painel registrado com sucesso!")
-  print(req["panel"])
+  # print(req["panel"])
 
 def list_panel_types():
     req = make_get_request_with_token('/panels/types/list')
@@ -253,26 +264,33 @@ def main():
     logged = False
 
     while not logged:
-        # email = input("Entre o seu email: ")
-        # password = input("Entre a sua senha: ")
+        email = input("Entre o seu email: ")
+        password = input("Entre a sua senha: ")
 
         #  email = "john.doe@exemplo.com"
         #  password = "password"
 
-        email = "alice.johnson@exemplo.com"
-        password = "qwerty"
+        # email = "alice.johnson@exemplo.com"
+        # password = "qwerty"
 
         if login(email, password):
             logged = True
 
     os.chdir(GENERATOR_PATH)
 
+    PROMPT = ""
+
     while True:
-        line = input("> ")
+        line = input(f"[{PROMPT}] > ")
         tokens = line.split(" ")
         if tokens[0] == "sair":
             print("Saindo...")
             break
+        elif tokens[0] == "mudar-prompt":
+            if len(tokens) != 2:
+                print("Comando invalido: mudar-prompt <novo_prompt>")
+                continue
+            PROMPT = tokens[1]
         elif tokens[0] == "ls":
             print(os.getcwd())
         elif tokens[0] == "notificacoes":
@@ -293,19 +311,18 @@ def main():
             exam_id = tokens[1]
             world_name = tokens[2]
             do_exam(exam_id, world_name)
-        elif tokens[0] == "verificar-exame":
+        elif tokens[0] == "validar-exame":
             if len(tokens) != 2:
-                print("Comando invalido")
+                print("Comando invalido: validar-exame <id-do-exame>")
                 continue
             exam_id = tokens[1]
-            verifiy_exam(exam_id)
+            validate_exam(exam_id)
         elif tokens[0] == "registrar-coleta":
-            if len(tokens) != 3:
-                print("Comando invalido: registrar-coleta <id_tipo_painel> <id_usuario>")
+            if len(tokens) != 2:
+                print("Comando invalido: registrar-coleta <id_usuario>")
                 continue
-            panel_type_id = tokens[1]
-            user_id = tokens[2]
-            register_sample(panel_type_id, user_id)
+            user_id = tokens[1]
+            register_sample(user_id)
         elif tokens[0] == "ver-coletas":
             if len(tokens) != 1:
                 print("Comando invalido: ver-coletas não possui argumentos")
@@ -326,8 +343,16 @@ def main():
                 continue
             condition_name = tokens[1]
             add_condition(condition_name)
+        elif tokens[0] == "listar-condicoes":
+            show_conditions()
+        elif tokens[0] == "mostrar-condicoes-identificadas":
+            show_user_conditions()
         elif tokens[0] == "listar-tipos-de-painel":
             list_panel_types()
+        elif tokens[0] == "mostrar-arvore":
+            if len(tokens) != 2:
+                print("Comando invalido: mostrar-arvore <id da familia>")
+            show_tree(tokens[1])
         else:
             print("Comando invalido")
 

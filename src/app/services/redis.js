@@ -118,6 +118,44 @@ async function findUserConditions(userId) {
   return result;
 }
 
+function intersectSize(a, b) {
+  const u = a.concat(b);
+  const s = new Set(u);
+  return u.length - s.size;
+}
+
+async function findRelated(userId) {
+  await client.open(url);
+  const userRepository = client.fetchRepository(redisUserSchema);
+  await userRepository.createIndex();
+
+  const user = await userRepository.search().where('id').equals(userId).returnFirst();
+
+  if (!user) return [];
+
+  const userHas1000 = user.genetic_codes.length >= 1000;
+
+  if (!userHas1000) return [];
+
+  const allUsers = await userRepository.search().returnAll();
+
+  const matches = [];
+
+  for (let i = 0; i < allUsers.length; i++) {
+    if (allUsers[i].id === user.id) continue;
+    const has1000 = (allUsers[i].genetic_codes.length >= 1000);
+    if (has1000) {
+      const matchingCodes = intersectSize(user.genetic_codes, allUsers[i].genetic_codes);
+      if (matchingCodes >= 400) {
+        matches.push(allUsers[i].id);
+      }
+    }
+  }
+
+  await client.close();
+  return matches;
+}
+
 /** 
  * P(A|B) = P(A) * P(B|A) / P(B)
  * @param {number} probA
@@ -147,5 +185,6 @@ module.exports = {
   addGenesToUser,
   addCondition,
   searchAllUsers,
-  findUserConditions
+  findUserConditions,
+  findRelated
 };
