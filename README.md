@@ -1,4 +1,4 @@
-# genomic-evaluation-platform
+# Genomic Evaluation Platform
 Personalized genomics platform that provides users with information about their family history, genetic conditions and health risks based on their DNA sequences.
 
 ## Running application
@@ -32,13 +32,3 @@ To run the application in production mode with Docker Compose or NPM, execute:
 To run tests of this application, you need to be in development mode. You can use either NPM or Docker:
   - `$ docker compose exec app-dev npm test`
   - `$ npm [run] test`
-
-## TO-DOs:
-
-- [x] Add automated tests package
-- [x] Add other NoSQL database containers and networks (and theirs respective packages, configs and environment variables)
-- [ ] Add CI to run tests in pull-requests and merge events
-- [ ] Create schema to relational model of database
-- [ ] Create schemas to NoSQL models of databases
-- [ ] Create functions and procedures that will fit application into requirements
-- [ ] Add data persistance to all databases (in second phase, after development)
