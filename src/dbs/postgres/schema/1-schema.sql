@@ -21,7 +21,7 @@ DROP TABLE IF EXISTS notificacao CASCADE;
 CREATE TABLE usuario (
   id            BIGSERIAL,
   nome_completo TEXT        NOT NULL,
-  email         TEXT        NOT NULL,
+  email         TEXT        NOT NULL UNIQUE,
   senha         TEXT        NOT NULL,
 
   CONSTRAINT usuario_pk PRIMARY KEY (id),
