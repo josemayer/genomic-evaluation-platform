@@ -6,7 +6,7 @@ import subprocess
 ADDRESS = "localhost"
 PORT = 4000
 
-GENERATOR_PATH = "./../world-generator/"
+GENERATOR_PATH = "./world-generator/"
 GENERATOR = "./generator"
 
 global_token = ""
@@ -27,7 +27,8 @@ def add_condition(condition_name):
 
     linenum, prob = data[0].split(' ')
     lines = [el.split(' ') for el in data[1:] if len(el) > 1]
-    genetic_information = [{"sequence": el[0], "probabilityInPopulation": el[1], "probabilityGivenSequence": el[2]} for el in lines]
+    genetic_information = [{"sequence": el[0], "probabilityInPopulation": el[1],
+                            "probabilityGivenSequence": el[2]} for el in lines]
 
     payload = {
         "description": condition_description,
@@ -58,7 +59,11 @@ def get_token(mail, password):
     headers = {
         'Content-Type': 'application/json'
     }
-    conn.request("POST", "/users/login", payload, headers)
+    try:
+        conn.request("POST", "/users/login", payload, headers)
+    except ConnectionRefusedError:
+        print("Conexão recusada com o servidor")
+        exit(1)
     res = conn.getresponse()
     data = res.read()
     data = data.decode("utf-8")
@@ -82,12 +87,17 @@ def make_post_request_with_token(url, payload):
         'Content-Type': 'application/json',
         'Authorization': bearer_token
     }
-    conn.request("POST", url, payload, headers)
+    try:
+        conn.request("POST", "/users/login", payload, headers)
+    except ConnectionRefusedError:
+        print("Conexão recusada com o servidor")
+        exit(1)
     res = conn.getresponse()
     data = res.read()
     data = data.decode("utf-8")
     data = json.loads(data)
     return data
+
 
 def make_post_request_without_token(url, body):
     conn = http.client.HTTPConnection(ADDRESS, PORT)
@@ -95,12 +105,17 @@ def make_post_request_without_token(url, body):
     headers = {
         'Content-Type': 'application/json'
     }
-    conn.request("POST", url, payload, headers)
+    try:
+        conn.request("POST", "/users/login", payload, headers)
+    except ConnectionRefusedError:
+        print("Conexão recusada com o servidor")
+        exit(1)
     res = conn.getresponse()
     data = res.read()
     data = data.decode("utf-8")
     data = json.loads(data)
     return data
+
 
 def make_get_request_with_token(url):
     global global_token
@@ -137,25 +152,30 @@ def login(email, password):
     # print(token_or_false)
     return True
 
+
 def register_client(nome_completo, email, senha, telefone):
-  new_client = make_post_request_without_token('/users/client/new', {'nome_completo': nome_completo, 'email': email, 'senha': senha, 'telefone': telefone})
+    new_client = make_post_request_without_token(
+        '/users/client/new', {'nome_completo': nome_completo, 'email': email, 'senha': senha, 'telefone': telefone})
 
-  if not "client" in new_client:
-    print("Erro ao cadastrar cliente:")
-    print(new_client)
-    return -1
+    if not "client" in new_client:
+        print("Erro ao cadastrar cliente:")
+        print(new_client)
+        return -1
 
-  print("Cliente cadastrado com sucesso:")
-  print(new_client['client'])
-  return new_client['client']['id']
+    print("Cliente cadastrado com sucesso:")
+    print(new_client['client'])
+    return new_client['client']['id']
+
 
 def notifications():
     notifications_internal = make_get_request_with_token('/notifications')
     for notification in filter(lambda x: not x['visualizado'], notifications_internal):
         print(f"{notification['data']} {notification['texto']}")
 
+
 def todos():
-    notifications_internal = make_get_request_with_token('/notifications/todos')
+    notifications_internal = make_get_request_with_token(
+        '/notifications/todos')
     if len(notifications_internal) == 0:
         print("Nenhuma pendencia")
         return
@@ -169,6 +189,7 @@ def validate_exam(exam_id):
         O exame foi validado
     """)
 
+
 def do_exam(exam_id, world_name):
 
     req = make_get_request_with_token(f"/exams/identify/{exam_id}")
@@ -180,13 +201,16 @@ def do_exam(exam_id, world_name):
     conditions_to_find = req['conditions_to_find']
 
     for i in range(len(req['conditions_to_find'])):
-        conditions_to_find[i] = input(f"Qual e o nome de {conditions_to_find[i]} no mundo?")
+        conditions_to_find[i] = input(
+            f"Qual e o nome de {conditions_to_find[i]} no mundo?")
 
-    data = subprocess.check_output([GENERATOR, "new_panel", world_name] + conditions_to_find)
+    data = subprocess.check_output(
+        [GENERATOR, "new_panel", world_name] + conditions_to_find)
     data = data.decode('utf-8')
     data = data.split('\n')
 
-    req = make_post_request_with_token('/exams/step/process', {'exam_id': exam_id, "genes": data})
+    req = make_post_request_with_token(
+        '/exams/step/process', {'exam_id': exam_id, "genes": data})
 
     if "message" in req:
         print(req)
@@ -217,7 +241,6 @@ def register_sample(user_id):
     print(print_string)
 
 
-
 def view_samples():
     req = make_get_request_with_token('/samples')
 
@@ -232,7 +255,8 @@ def view_samples():
 
 
 def ask_for_exam(sample_id, panel_type_id):
-    req = make_post_request_with_token('/exams/step/enqueue', {'sample_id': sample_id, 'panel_type_id': panel_type_id})
+    req = make_post_request_with_token(
+        '/exams/step/enqueue', {'sample_id': sample_id, 'panel_type_id': panel_type_id})
 
     # TODO(luatil): Handle req failure
     exam_id = req['step_result']['exam_id']
@@ -246,35 +270,40 @@ def ask_for_exam(sample_id, panel_type_id):
 
     print(print_string)
 
+
 def show_conditions():
     req = make_get_request_with_token('/conditions/list')
     for cond in req:
         print(f"{cond['id']} {cond['nome']}")
 
+
 def show_user_conditions():
-  req = make_get_request_with_token('/exams/user/completed')
+    req = make_get_request_with_token('/exams/user/completed')
 
-  if not "exams" in req:
-    print("Erro ao listar exames:")
-    print(req["message"])
-    return None
+    if not "exams" in req:
+        print("Erro ao listar exames:")
+        print(req["message"])
+        return None
 
-  for exam in req["exams"]:
-    print(f"Exame {exam['id']}:")
-    for cond in exam['conditions']:
-      print(f"  - {cond['nome']}: {cond['probabilidade']}")
-  print('')
+    for exam in req["exams"]:
+        print(f"Exame {exam['id']}:")
+        for cond in exam['conditions']:
+            print(f"  - {cond['nome']}: {cond['probabilidade']}")
+    print('')
+
 
 def register_panel_type_with_conditions(panel_type_desc, conditions):
-  req = make_post_request_with_token('/panels/types/new', {'description': panel_type_desc, 'conditions_id_list': conditions})
+    req = make_post_request_with_token(
+        '/panels/types/new', {'description': panel_type_desc, 'conditions_id_list': conditions})
 
-  if not "panel" in req:
-    print("Erro ao registrar painel:")
-    print(req["message"])
-    return None
+    if not "panel" in req:
+        print("Erro ao registrar painel:")
+        print(req["message"])
+        return None
 
-  print("Painel registrado com sucesso!")
-  # print(req["panel"])
+    print("Painel registrado com sucesso!")
+    # print(req["panel"])
+
 
 def list_panel_types():
     req = make_get_request_with_token('/panels/types/list')
@@ -283,120 +312,129 @@ def list_panel_types():
         for c in pt['conditions']:
             print(f"  - {c['condicao_id']} {c['nome']}")
 
+
 def main():
     logged = False
     exit_program = False
 
-    print(f"Bem vindo(a) à Plataforma Genômica Personalizada!");
+    print(f"Bem vindo(a) à Plataforma Genômica Personalizada!")
 
     while not exit_program:
-      while not logged:
-          print("\nSelecione uma opção para continuar:")
+        while not logged:
+            print("\nSelecione uma opção para continuar:")
 
-          option = input(f"[1] Login\n[2] Registrar\n[3] Sair\n")
+            option = input(f"[1] Login\n[2] Registrar\n[3] Sair\n")
 
-          if option == "1":
-            email = input("Insira o seu email: ")
-            password = input("Insira a sua senha: ")
+            if option == "1":
+                email = input("Insira o seu email: ")
+                password = input("Insira a sua senha: ")
 
-            if login(email, password):
-                logged = True
+                if login(email, password):
+                    logged = True
 
-          elif option == "2":
-            nome = input("Qual é o seu nome completo? ")
-            email = input("Qual é o seu email? ")
-            password = input("Qual é a sua senha? ")
-            telefone = input("Qual é o seu telefone? ")
+            elif option == "2":
+                nome = input("Qual é o seu nome completo? ")
+                email = input("Qual é o seu email? ")
+                password = input("Qual é a sua senha? ")
+                telefone = input("Qual é o seu telefone? ")
 
-            register_client(nome, email, password, telefone)
-          elif option == "3":
-            print("Saindo...")
+                register_client(nome, email, password, telefone)
+            elif option == "3":
+                print("Saindo...")
+                exit_program = True
+                break
+            else:
+                print("Opção inválida")
+
+        try:
+            os.chdir(GENERATOR_PATH)
+        except FileNotFoundError:
+            print("Gerador não encontrado")
             exit_program = True
             break
-          else:
-            print("Opção inválida")
 
+        PROMPT = ""
 
-      os.chdir(GENERATOR_PATH)
+        while not exit_program and logged:
+            line = input(f"[{PROMPT}] > ")
+            tokens = line.split(" ")
+            if tokens[0] == "sair":
+                print("Saindo...")
+                logged = False
+            elif tokens[0] == "mudar-prompt":
+                if len(tokens) != 2:
+                    print("Comando invalido: mudar-prompt <novo_prompt>")
+                    continue
+                PROMPT = tokens[1]
+            elif tokens[0] == "ls":
+                print(os.getcwd())
+            elif tokens[0] == "notificacoes":
+                notifications()
+            elif tokens[0] == "pendencias":
+                todos()
+            elif tokens[0] == "pedir-exame":
+                if len(tokens) != 3:
+                    print("Comando invalido: pedir-exame <id_amostra> <id_painel>")
+                    continue
+                sample_id = tokens[1]
+                panel_type_id = tokens[2]
+                ask_for_exam(sample_id, panel_type_id)
+            elif tokens[0] == "fazer-exame":
+                if len(tokens) != 3:
+                    print(
+                        "Comando invalido: fazer-exame <id_exame> <noma_da_pessoa_world>")
+                    continue
+                exam_id = tokens[1]
+                world_name = tokens[2]
+                do_exam(exam_id, world_name)
+            elif tokens[0] == "validar-exame":
+                if len(tokens) != 2:
+                    print("Comando invalido: validar-exame <id-do-exame>")
+                    continue
+                exam_id = tokens[1]
+                validate_exam(exam_id)
+            elif tokens[0] == "registrar-coleta":
+                if len(tokens) != 2:
+                    print("Comando invalido: registrar-coleta <id_usuario>")
+                    continue
+                user_id = tokens[1]
+                register_sample(user_id)
+            elif tokens[0] == "ver-coletas":
+                if len(tokens) != 1:
+                    print("Comando invalido: ver-coletas não possui argumentos")
+                    continue
+                view_samples()
+            elif tokens[0] == "registrar-tipo-de-painel":
+                if len(tokens) < 3:
+                    print(
+                        "Comando invalido: registrar-tipo-de-painel '<descricao>' <id_condicao> ... <id_condicao>")
+                    continue
 
-      PROMPT = ""
+                panel_type_desc = " ".join(tokens[1:]).split("'")[1::2][0]
+                conditions = [int(x) for x in " ".join(tokens[1:]).split("'")[
+                    2::2][0].split(" ") if x != ""]
 
-      while not exit_program and logged:
-          line = input(f"[{PROMPT}] > ")
-          tokens = line.split(" ")
-          if tokens[0] == "sair":
-              print("Saindo...")
-              logged = False
-          elif tokens[0] == "mudar-prompt":
-              if len(tokens) != 2:
-                  print("Comando invalido: mudar-prompt <novo_prompt>")
-                  continue
-              PROMPT = tokens[1]
-          elif tokens[0] == "ls":
-              print(os.getcwd())
-          elif tokens[0] == "notificacoes":
-              notifications()
-          elif tokens[0] == "pendencias":
-              todos()
-          elif tokens[0] == "pedir-exame":
-              if len(tokens) != 3:
-                  print("Comando invalido: pedir-exame <id_amostra> <id_painel>")
-                  continue
-              sample_id = tokens[1]
-              panel_type_id = tokens[2]
-              ask_for_exam(sample_id, panel_type_id)
-          elif tokens[0] == "fazer-exame":
-              if len(tokens) != 3:
-                  print("Comando invalido: fazer-exame <id_exame> <noma_da_pessoa_world>")
-                  continue
-              exam_id = tokens[1]
-              world_name = tokens[2]
-              do_exam(exam_id, world_name)
-          elif tokens[0] == "validar-exame":
-              if len(tokens) != 2:
-                  print("Comando invalido: validar-exame <id-do-exame>")
-                  continue
-              exam_id = tokens[1]
-              validate_exam(exam_id)
-          elif tokens[0] == "registrar-coleta":
-              if len(tokens) != 2:
-                  print("Comando invalido: registrar-coleta <id_usuario>")
-                  continue
-              user_id = tokens[1]
-              register_sample(user_id)
-          elif tokens[0] == "ver-coletas":
-              if len(tokens) != 1:
-                  print("Comando invalido: ver-coletas não possui argumentos")
-                  continue
-              view_samples()
-          elif tokens[0] == "registrar-tipo-de-painel":
-              if len(tokens) < 3:
-                  print("Comando invalido: registrar-tipo-de-painel '<descricao>' <id_condicao> ... <id_condicao>")
-                  continue
-
-              panel_type_desc = " ".join(tokens[1:]).split("'")[1::2][0]
-              conditions = [int(x) for x in " ".join(tokens[1:]).split("'")[2::2][0].split(" ") if x != ""]
-
-              register_panel_type_with_conditions(panel_type_desc, conditions)
-          elif tokens[0] == "adicionar-condicao":
-              if len(tokens) != 2:
-                  print("Comand invalido: adicionar-condicao <nome-condicao>")
-                  continue
-              condition_name = tokens[1]
-              add_condition(condition_name)
-          elif tokens[0] == "listar-condicoes":
-              show_conditions()
-          elif tokens[0] == "mostrar-condicoes-identificadas":
-              show_user_conditions()
-          elif tokens[0] == "listar-tipos-de-painel":
-              list_panel_types()
-          elif tokens[0] == "mostrar-arvore":
-              if len(tokens) != 2:
-                  print("Comando invalido: mostrar-arvore <id de membro familia>")
-                  continue
-              show_tree(tokens[1])
-          else:
-              print("Comando invalido")
+                register_panel_type_with_conditions(
+                    panel_type_desc, conditions)
+            elif tokens[0] == "adicionar-condicao":
+                if len(tokens) != 2:
+                    print("Comand invalido: adicionar-condicao <nome-condicao>")
+                    continue
+                condition_name = tokens[1]
+                add_condition(condition_name)
+            elif tokens[0] == "listar-condicoes":
+                show_conditions()
+            elif tokens[0] == "mostrar-condicoes-identificadas":
+                show_user_conditions()
+            elif tokens[0] == "listar-tipos-de-painel":
+                list_panel_types()
+            elif tokens[0] == "mostrar-arvore":
+                if len(tokens) != 2:
+                    print("Comando invalido: mostrar-arvore <id de membro familia>")
+                    continue
+                show_tree(tokens[1])
+            else:
+                print("Comando invalido")
 
 
 if __name__ == "__main__":
