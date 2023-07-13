@@ -1,8 +1,13 @@
 const pg = require('../../../app/config/postgres');
 const users = require('../../../app/services/users');
+const neo4j = require('../../../app/services/neo4j');
 
 jest.mock('../../../app/config/postgres', () => ({
   query: jest.fn(),
+}));
+
+jest.mock('../../../app/services/neo4j', () => ({
+  addPerson: jest.fn(),
 }));
 
 describe('users service', () => {
@@ -103,6 +108,7 @@ describe('users service', () => {
         const userId = 1;
 
         pg.query.mockResolvedValue({ rows: [{ id: userId }] });
+        neo4j.addPerson.mockResolvedValue("Created Person with id: " + userId);
 
         const expectedResult = {
           id: userId,
@@ -117,8 +123,10 @@ describe('users service', () => {
         expect(pg.query).toHaveBeenCalledTimes(1);
         expect(pg.query).toHaveBeenCalledWith(
           'INSERT INTO ClienteView (nome_completo, email, senha, telefone) VALUES ($1, $2, $3, $4) RETURNING id',
-          [clientData.nome_completo, clientData.email, clientData.senha, clientData.telefone], 'user'
+          [clientData.nome_completo, clientData.email, clientData.senha, clientData.telefone], 'system'
         );
+        expect(neo4j.addPerson).toHaveBeenCalledTimes(1);
+        expect(neo4j.addPerson).toHaveBeenCalledWith(userId);
       });
     });
   });
@@ -162,7 +170,7 @@ describe('users service', () => {
         expect(pg.query).toHaveBeenCalledTimes(1);
         expect(pg.query).toHaveBeenCalledWith(
           'INSERT INTO ClienteView (nome_completo, email, senha, telefone) VALUES ($1, $2, $3, $4) RETURNING id',
-          [clientData.nome_completo, clientData.email, clientData.senha, clientData.telefone], 'user'
+          [clientData.nome_completo, clientData.email, clientData.senha, clientData.telefone], 'system'
         );
       });
     });

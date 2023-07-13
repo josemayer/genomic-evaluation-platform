@@ -89,6 +89,18 @@ def make_post_request_with_token(url, payload):
     data = json.loads(data)
     return data
 
+def make_post_request_without_token(url, body):
+    conn = http.client.HTTPConnection(ADDRESS, PORT)
+    payload = json.dumps(body)
+    headers = {
+        'Content-Type': 'application/json'
+    }
+    conn.request("POST", url, payload, headers)
+    res = conn.getresponse()
+    data = res.read()
+    data = data.decode("utf-8")
+    data = json.loads(data)
+    return data
 
 def make_get_request_with_token(url):
     global global_token
@@ -125,6 +137,17 @@ def login(email, password):
     # print(token_or_false)
     return True
 
+def register_client(nome_completo, email, senha, telefone):
+  new_client = make_post_request_without_token('/users/client/new', {'nome_completo': nome_completo, 'email': email, 'senha': senha, 'telefone': telefone})
+
+  if not "client" in new_client:
+    print("Erro ao cadastrar cliente:")
+    print(new_client)
+    return -1
+
+  print("Cliente cadastrado com sucesso:")
+  print(new_client['client'])
+  return new_client['client']['id']
 
 def notifications():
     notifications_internal = make_get_request_with_token('/notifications')
@@ -262,100 +285,118 @@ def list_panel_types():
 
 def main():
     logged = False
+    exit_program = False
 
-    while not logged:
-        email = input("Entre o seu email: ")
-        password = input("Entre a sua senha: ")
+    print(f"Bem vindo(a) à Plataforma Genômica Personalizada!");
 
-        #  email = "john.doe@exemplo.com"
-        #  password = "password"
+    while not exit_program:
+      while not logged:
+          print("\nSelecione uma opção para continuar:")
 
-        # email = "alice.johnson@exemplo.com"
-        # password = "qwerty"
+          option = input(f"[1] Login\n[2] Registrar\n[3] Sair\n")
 
-        if login(email, password):
-            logged = True
+          if option == "1":
+            email = input("Insira o seu email: ")
+            password = input("Insira a sua senha: ")
 
-    os.chdir(GENERATOR_PATH)
+            if login(email, password):
+                logged = True
 
-    PROMPT = ""
+          elif option == "2":
+            nome = input("Qual é o seu nome completo? ")
+            email = input("Qual é o seu email? ")
+            password = input("Qual é a sua senha? ")
+            telefone = input("Qual é o seu telefone? ")
 
-    while True:
-        line = input(f"[{PROMPT}] > ")
-        tokens = line.split(" ")
-        if tokens[0] == "sair":
+            register_client(nome, email, password, telefone)
+          elif option == "3":
             print("Saindo...")
+            exit_program = True
             break
-        elif tokens[0] == "mudar-prompt":
-            if len(tokens) != 2:
-                print("Comando invalido: mudar-prompt <novo_prompt>")
-                continue
-            PROMPT = tokens[1]
-        elif tokens[0] == "ls":
-            print(os.getcwd())
-        elif tokens[0] == "notificacoes":
-            notifications()
-        elif tokens[0] == "pendencias":
-            todos()
-        elif tokens[0] == "pedir-exame":
-            if len(tokens) != 3:
-                print("Comando invalido: pedir-exame <id_amostra> <id_painel>")
-                continue
-            sample_id = tokens[1]
-            panel_type_id = tokens[2]
-            ask_for_exam(sample_id, panel_type_id)
-        elif tokens[0] == "fazer-exame":
-            if len(tokens) != 3:
-                print("Comando invalido: fazer-exame <id_exame> <noma_da_pessoa_world>")
-                continue
-            exam_id = tokens[1]
-            world_name = tokens[2]
-            do_exam(exam_id, world_name)
-        elif tokens[0] == "validar-exame":
-            if len(tokens) != 2:
-                print("Comando invalido: validar-exame <id-do-exame>")
-                continue
-            exam_id = tokens[1]
-            validate_exam(exam_id)
-        elif tokens[0] == "registrar-coleta":
-            if len(tokens) != 2:
-                print("Comando invalido: registrar-coleta <id_usuario>")
-                continue
-            user_id = tokens[1]
-            register_sample(user_id)
-        elif tokens[0] == "ver-coletas":
-            if len(tokens) != 1:
-                print("Comando invalido: ver-coletas não possui argumentos")
-                continue
-            view_samples()
-        elif tokens[0] == "registrar-tipo-de-painel":
-            if len(tokens) < 3:
-                print("Comando invalido: registrar-tipo-de-painel '<descricao>' <id_condicao> ... <id_condicao>")
-                continue
+          else:
+            print("Opção inválida")
 
-            panel_type_desc = " ".join(tokens[1:]).split("'")[1::2][0]
-            conditions = [int(x) for x in " ".join(tokens[1:]).split("'")[2::2][0].split(" ") if x != ""]
 
-            register_panel_type_with_conditions(panel_type_desc, conditions)
-        elif tokens[0] == "adicionar-condicao":
-            if len(tokens) != 2:
-                print("Comand invalido: adicionar-condicao <nome-condicao>")
-                continue
-            condition_name = tokens[1]
-            add_condition(condition_name)
-        elif tokens[0] == "listar-condicoes":
-            show_conditions()
-        elif tokens[0] == "mostrar-condicoes-identificadas":
-            show_user_conditions()
-        elif tokens[0] == "listar-tipos-de-painel":
-            list_panel_types()
-        elif tokens[0] == "mostrar-arvore":
-            if len(tokens) != 2:
-                print("Comando invalido: mostrar-arvore <id de membro familia>")
-                continue
-            show_tree(tokens[1])
-        else:
-            print("Comando invalido")
+      os.chdir(GENERATOR_PATH)
+
+      PROMPT = ""
+
+      while not exit_program and logged:
+          line = input(f"[{PROMPT}] > ")
+          tokens = line.split(" ")
+          if tokens[0] == "sair":
+              print("Saindo...")
+              logged = False
+          elif tokens[0] == "mudar-prompt":
+              if len(tokens) != 2:
+                  print("Comando invalido: mudar-prompt <novo_prompt>")
+                  continue
+              PROMPT = tokens[1]
+          elif tokens[0] == "ls":
+              print(os.getcwd())
+          elif tokens[0] == "notificacoes":
+              notifications()
+          elif tokens[0] == "pendencias":
+              todos()
+          elif tokens[0] == "pedir-exame":
+              if len(tokens) != 3:
+                  print("Comando invalido: pedir-exame <id_amostra> <id_painel>")
+                  continue
+              sample_id = tokens[1]
+              panel_type_id = tokens[2]
+              ask_for_exam(sample_id, panel_type_id)
+          elif tokens[0] == "fazer-exame":
+              if len(tokens) != 3:
+                  print("Comando invalido: fazer-exame <id_exame> <noma_da_pessoa_world>")
+                  continue
+              exam_id = tokens[1]
+              world_name = tokens[2]
+              do_exam(exam_id, world_name)
+          elif tokens[0] == "validar-exame":
+              if len(tokens) != 2:
+                  print("Comando invalido: validar-exame <id-do-exame>")
+                  continue
+              exam_id = tokens[1]
+              validate_exam(exam_id)
+          elif tokens[0] == "registrar-coleta":
+              if len(tokens) != 2:
+                  print("Comando invalido: registrar-coleta <id_usuario>")
+                  continue
+              user_id = tokens[1]
+              register_sample(user_id)
+          elif tokens[0] == "ver-coletas":
+              if len(tokens) != 1:
+                  print("Comando invalido: ver-coletas não possui argumentos")
+                  continue
+              view_samples()
+          elif tokens[0] == "registrar-tipo-de-painel":
+              if len(tokens) < 3:
+                  print("Comando invalido: registrar-tipo-de-painel '<descricao>' <id_condicao> ... <id_condicao>")
+                  continue
+
+              panel_type_desc = " ".join(tokens[1:]).split("'")[1::2][0]
+              conditions = [int(x) for x in " ".join(tokens[1:]).split("'")[2::2][0].split(" ") if x != ""]
+
+              register_panel_type_with_conditions(panel_type_desc, conditions)
+          elif tokens[0] == "adicionar-condicao":
+              if len(tokens) != 2:
+                  print("Comand invalido: adicionar-condicao <nome-condicao>")
+                  continue
+              condition_name = tokens[1]
+              add_condition(condition_name)
+          elif tokens[0] == "listar-condicoes":
+              show_conditions()
+          elif tokens[0] == "mostrar-condicoes-identificadas":
+              show_user_conditions()
+          elif tokens[0] == "listar-tipos-de-painel":
+              list_panel_types()
+          elif tokens[0] == "mostrar-arvore":
+              if len(tokens) != 2:
+                  print("Comando invalido: mostrar-arvore <id de membro familia>")
+                  continue
+              show_tree(tokens[1])
+          else:
+              print("Comando invalido")
 
 
 if __name__ == "__main__":
