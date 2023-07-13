@@ -15,7 +15,7 @@ DROP TABLE IF EXISTS painel CASCADE;
 DROP TABLE IF EXISTS condicao CASCADE;
 DROP TABLE IF EXISTS condicao_sequencia_dna CASCADE;
 DROP TABLE IF EXISTS identifica_condicao CASCADE;
-DROP TABLE IF EXISTS pode_identifica_condicao CASCADE;
+DROP TABLE IF EXISTS pode_identificar_condicao CASCADE;
 DROP TABLE IF EXISTS notificacao CASCADE;
 
 CREATE TABLE usuario (
