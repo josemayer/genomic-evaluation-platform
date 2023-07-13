@@ -226,8 +226,18 @@ async function validateExam(id, user) {
 async function getConditionsOfExam(user, id) {
   if (!permissions.hasType(user.types, 'laboratorista') && !permissions.hasType(user.types, 'medico'))
     throw new Error('Only laboratory technicians can get conditions of exams');
+
+    console.log(id);
  
-  const conditions = await pg.query('select * from pode_identificar_condicao pc inner join condicao on pc.condicao_id = condicao.id where pc.tipo_painel_id = $1', [id], 'system')
+    let conditions;
+    if (false) {
+    id = 4;
+  conditions = await pg.query('select * from pode_identificar_condicao pc inner join condicao on pc.condicao_id = condicao.id where pc.tipo_painel_id = $1', [id], 'system')
+    } else {
+  conditions = await pg.query(
+    'select * from pode_identificar_condicao pc inner join condicao on pc.condicao_id = condicao.id inner join exame on pc.tipo_painel_id = exame.tipo_painel_id where exame.id = $1;'
+      , [id], 'system')
+    }
 
   const historyArr = [];
   conditions.rows.forEach(h => {

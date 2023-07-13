@@ -10,7 +10,9 @@ adicionar-condicao bromidase-plantar
 cheiro forte na base do pe
 chule
 listar-condicoes
+listar-tipos-de-painel
 registrar-tipo-de-painel 'CHL3' 5
+listar-tipos-de-painel
 # cliente
 python3 main.py
 cli
@@ -52,7 +54,7 @@ pai
 mudar-prompt PAI
 mostrar-arvore 8
 registrar-coleta 8
-pedir-exame 7 1
+pedir-exame 7 1 # retornado por registrar coleta
 # filha
 python3 main.py
 filha
@@ -60,6 +62,7 @@ filha
 mudar-prompt FILHA
 registrar-coleta 9
 pedir-exame 8 1
+sair
 # lab
 python3 main.py
 lab
@@ -67,6 +70,7 @@ lab
 mudar-prompt LAB
 pendencias
 fazer-exame 5 joao
+fazer-exame 6 joana
 sair
 # pai
 mostrar-arvore 8
