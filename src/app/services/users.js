@@ -2,6 +2,7 @@ const pg = require('../config/postgres');
 const env = require('../config/env');
 const helper = require('../helpers/query');
 const auth = require('./auth');
+const neo4j = require('.neo4j');
 
 async function getAllClients() {
   const clients = await pg.query(
@@ -47,6 +48,8 @@ async function insertClient(clientData) {
   const clientInsertResult = await pg.query(clientInsertQuery, clientInsertValues, 'user');
 
   const userId = clientInsertResult.rows[0].id;
+
+  neo4j.addPerson(userId);
 
   const insertedClient = {
     id: userId,
