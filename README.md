@@ -1,6 +1,24 @@
 # Genomic Evaluation Platform
 Personalized genomics platform that provides users with information about their family history, genetic conditions and health risks based on their DNA sequences.
 
+## Running the application (simplified)
+
+Check for dependencies, generate world, copy .env files and start docker compose:
+
+1. ./start.sh
+
+Check if the docker container is up and run the test suite
+
+2. ./checkhealth.sh
+
+Run the cli interface
+
+3. python3 cli/main.py
+
+Stop the docker container and clean the generated world files
+
+4. ./stop_and_clean.sh
+
 ## Running application
 
 To run this application, you must:
