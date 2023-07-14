@@ -44,6 +44,18 @@ def add_condition(condition_name):
     condition_description = input("Digite a descricao da condicao: ")
     world_name = input("Digite o nome no mundo: ")
 
+    error_string = """
+      Condicao nao existe no mundo gerado. Para adicionar nova condicao é necessário gerar ela no mundo.
+    """
+
+    if not os.path.exists(world_name):
+        print(error_string)
+        # Print all file names in the directory
+        print("Condicoes disponíveis: ")
+        for file in os.listdir('world/conditions'):
+            print(file)
+        return None
+
     data = subprocess.check_output([GENERATOR, "read_condition", world_name])
     data = data.decode('utf-8')
     data = data.split('\n')
@@ -111,7 +123,7 @@ def make_post_request_with_token(url, payload):
         'Authorization': bearer_token
     }
     try:
-        conn.request("POST", "/users/login", payload, headers)
+        conn.request("POST", url, payload, headers)
     except ConnectionRefusedError:
         print("Conexão recusada com o servidor")
         exit(1)
@@ -129,7 +141,7 @@ def make_post_request_without_token(url, body):
         'Content-Type': 'application/json'
     }
     try:
-        conn.request("POST", "/users/login", payload, headers)
+        conn.request("POST", url, payload, headers)
     except ConnectionRefusedError:
         print("Conexão recusada com o servidor")
         exit(1)
