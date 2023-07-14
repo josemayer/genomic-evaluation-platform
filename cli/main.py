@@ -12,6 +12,29 @@ GENERATOR = "./generator"
 global_token = ""
 
 
+def help():
+    print(global_token)
+    print("""
+        Comandos disponíveis:
+        - sair: Encerra o programa.
+        - mudar-prompt <novo_prompt>: Altera o prompt atual para o novo_prompt.
+        - ls: Exibe o diretório atual.
+        - notificacoes: Exibe as notificações do usuário.
+        - pendencias: Exibe as pendências do usuário.
+        - pedir-exame <id_amostra> <id_painel>: Solicita a realização de um exame para uma amostra específica, usando um determinado tipo de painel.
+        - fazer-exame <id_exame> <nome_da_pessoa_world>: Realiza um exame específico para uma pessoa, utilizando um mundo com o nome fornecido.
+        - validar-exame <id_do_exame>: Valida um exame realizado, utilizando o ID do exame.
+        - registrar-coleta <id_usuario>: Registra uma nova coleta de amostra para um usuário específico.
+        - ver-coletas: Exibe as coletas de amostras realizadas.
+        - registrar-tipo-de-painel '<descricao>' <id_condicao> ... <id_condicao>: Registra um novo tipo de painel, com uma descrição e uma lista de IDs de condições associadas.
+        - adicionar-condicao <nome_condicao>: Adiciona uma nova condição, com nome, descrição e informações genéticas.
+        - listar-condicoes: Lista todas as condições registradas.
+        - mostrar-condicoes-identificadas: Exibe as condições identificadas nos exames realizados pelo usuário.
+        - listar-tipos-de-painel: Lista todos os tipos de painel registrados.
+        - mostrar-arvore <id_de_membro_familia>: Exibe a árvore genealógica de um membro da família com o ID fornecido.
+    """)
+
+
 def show_tree(family_id):
     res = make_get_request_with_token('/neo4j/listFamily/' + family_id)
     print(res)
@@ -360,6 +383,9 @@ def main():
             if tokens[0] == "sair":
                 print("Saindo...")
                 logged = False
+            elif tokens[0] == "ajuda":
+                help()
+                continue
             elif tokens[0] == "mudar-prompt":
                 if len(tokens) != 2:
                     print("Comando invalido: mudar-prompt <novo_prompt>")
