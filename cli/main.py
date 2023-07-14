@@ -317,6 +317,12 @@ def main():
     logged = False
     exit_program = False
 
+    try:
+        os.chdir(GENERATOR_PATH)
+    except FileNotFoundError:
+        print("Gerador não encontrado")
+        exit(1)
+
     print(f"Bem vindo(a) à Plataforma Genômica Personalizada!")
 
     while not exit_program:
@@ -345,13 +351,6 @@ def main():
                 break
             else:
                 print("Opção inválida")
-
-        try:
-            os.chdir(GENERATOR_PATH)
-        except FileNotFoundError:
-            print("Gerador não encontrado")
-            exit_program = True
-            break
 
         PROMPT = ""
 
