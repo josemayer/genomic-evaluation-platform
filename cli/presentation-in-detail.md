@@ -1,12 +1,35 @@
-docker compose --profile dev build && docker compose --profile dev up
-cd world-generator && make
-# lab
-python3 main.py
-lab
-lab
-mudar-prompt LAB
-listar-condicoes
-adicionar-condicao bromidase-plantar 
+Apresentação: 
+
+Começar a execução do sistema:
+
+> ./start.sh
+
+Checar a execucação do sistema:
+
+> ./checkhealth
+
+# Laboratorista
+
+> python3 cli/main.py
+
+Presionar a opção de login [1] e digitar o email
+e senha do laboratorista.
+
+email: lab
+senha: lab
+
+Mudar o prompt para LAB
+
+> mudar-prompt LAB
+
+Listar as condicoes existentes no sistema:
+
+> listar-condicoes
+
+Adicionar uma condicao nova no sistema:
+
+> adicionar-condicao bromidase-plantar 
+
 cheiro forte na base do pe
 chule
 listar-condicoes
