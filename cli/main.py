@@ -13,7 +13,6 @@ global_token = ""
 
 
 def help():
-    print(global_token)
     print("""
         Comandos disponíveis:
         - sair: Encerra o programa.
@@ -237,7 +236,7 @@ def do_exam(exam_id, world_name):
 
     for i in range(len(req['conditions_to_find'])):
         conditions_to_find[i] = input(
-            f"Qual e o nome de {conditions_to_find[i]} no mundo?")
+            f"Qual e o nome de {conditions_to_find[i]} no mundo: ")
 
     data = subprocess.check_output(
         [GENERATOR, "new_panel", world_name] + conditions_to_find)
