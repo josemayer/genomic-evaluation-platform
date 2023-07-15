@@ -47,7 +47,7 @@ def add_condition(condition_name):
       Condicao nao existe no mundo gerado. Para adicionar nova condicao é necessário gerar ela no mundo.
     """
 
-    if not os.path.exists(world_name):
+    if not os.path.exists(os.path.join('world/conditions/', world_name)):
         print(error_string)
         # Print all file names in the directory
         print("Condicoes disponíveis: ")
